@@ -110,7 +110,7 @@ async function createAtomicTransactionGroup(
   const txns = [userTransaction];
 
   return {
-    paymentIndex: 1,
+    paymentIndex: 0,
     paymentGroup: txns.map(txn => Buffer.from(txn.toByte()).toString("base64")),
   };
 }
@@ -183,13 +183,10 @@ export async function signPaymentHeader(
   const payload: ExactAvmPayload = paymentRequirements?.extra?.feePayer
     ? {
       paymentIndex: 1,
-      paymentGroup: [
-        signedTransaction,
-        paymentGroup[1],
-      ],
+      paymentGroup: [signedTransaction, paymentGroup[1]],
     }
     : {
-      paymentIndex: 1,
+      paymentIndex: 0,
       paymentGroup: [signedTransaction],
     };
 

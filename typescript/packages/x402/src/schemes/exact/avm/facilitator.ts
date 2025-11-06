@@ -70,7 +70,7 @@ export async function verify(
   try {
     const exactAvmPayload = payload.payload as ExactAvmPayload;
     const payloadTransaction = exactAvmPayload?.paymentGroup?.[exactAvmPayload?.paymentIndex - 1];
-    if (!exactAvmPayload || !payloadTransaction) {
+    if (!exactAvmPayload || !payloadTransaction || exactAvmPayload?.paymentGroup.length > 16) {
       console.error("Missing fee transaction for fee payer");
       return {
         isValid: false,
