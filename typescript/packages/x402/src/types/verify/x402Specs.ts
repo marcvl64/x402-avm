@@ -126,8 +126,8 @@ export type ExactSvmPayload = z.infer<typeof ExactSvmPayloadSchema>;
 
 // x402ExactAvmPayload
 export const ExactAvmPayloadSchema = z.object({
-  transaction: z.string().regex(Base64EncodedRegex),
-  feeTransaction: z.string().regex(Base64EncodedRegex).optional(),
+  paymentIndex: z.number(),
+  paymentGroup: z.array(z.string().regex(Base64EncodedRegex)),
 });
 export type ExactAvmPayload = z.infer<typeof ExactAvmPayloadSchema>;
 
@@ -139,8 +139,15 @@ export const PaymentPayloadSchema = z.object({
   payload: z.union([ExactAvmPayloadSchema, ExactEvmPayloadSchema, ExactSvmPayloadSchema]),
 });
 export type PaymentPayload = z.infer<typeof PaymentPayloadSchema>;
+type UnsignedPayload =
+  | (ExactEvmPayload extends { signature: any }
+    ? Omit<ExactEvmPayload, "signature"> & { signature?: undefined }
+    : ExactEvmPayload)
+  | ExactAvmPayload
+  | ExactSvmPayload;
+
 export type UnsignedPaymentPayload = Omit<PaymentPayload, "payload"> & {
-  payload: Omit<ExactEvmPayload, "signature"> & { signature: undefined };
+  payload: UnsignedPayload;
 };
 
 // x402 Resource Server Response

@@ -10,7 +10,7 @@ import {
 
 const ALGOD_TOKEN = "";
 
-export type AlgorandNetwork = "algorand" | "algorand-testnet";
+export type AlgorandNetwork = "algorand-mainnet" | "algorand-testnet";
 
 export interface UseAlgorandWalletResult {
   activeAddress?: string;
@@ -29,7 +29,7 @@ export interface UseAlgorandWalletResult {
 /**
  * React hook for managing Algorand wallet connections, accounts, and transaction signing.
  *
- * @param network - The Algorand network to connect to ("algorand" for mainnet or "algorand-testnet" for testnet).
+ * @param network - The Algorand network to connect to ("algorand-mainnet" for mainnet or "algorand-testnet" for testnet).
  * @param algodClient - An instance of algosdk.Algodv2 used for interacting with the Algorand blockchain.
  * @returns An object containing wallet state, connection methods, and transaction signing utilities.
  */

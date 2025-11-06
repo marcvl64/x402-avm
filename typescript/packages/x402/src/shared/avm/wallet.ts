@@ -5,7 +5,7 @@ import { SupportedAVMNetworks, Network } from "../../types/shared";
 import { AlgorandClient, WalletAccount } from "../../schemes/exact/avm/types";
 
 const DEFAULT_ALGOD_ENDPOINTS = {
-  algorand: "https://mainnet-api.algonode.cloud",
+  "algorand-mainnet": "https://mainnet-api.algonode.cloud",
   "algorand-testnet": "https://testnet-api.algonode.cloud",
 } as const;
 

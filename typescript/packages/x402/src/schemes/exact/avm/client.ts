@@ -1,7 +1,6 @@
 import { PaymentPayload, PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify";
 import { ExactAvmPayload } from "../../../types/verify/x402Specs";
 import { encodePayment } from "./utils/paymentUtils";
-import { createLeaseFromPaymentRequirements } from "./utils/leaseUtils";
 import { WalletAccount, AlgorandClient } from "./types";
 import algosdk from "algosdk";
 
@@ -9,28 +8,8 @@ import algosdk from "algosdk";
  * Interface representing an atomic transaction group
  */
 interface AtomicTransactionGroup {
-  userTransaction: algosdk.Transaction;
-  feePayerTransaction?: algosdk.Transaction;
-}
-
-/**
- * Extended version of UnsignedPaymentPayload that includes the transaction group
- * This is used internally to pass the transaction group between functions
- */
-interface ExtendedUnsignedPaymentPayload extends UnsignedPaymentPayload {
-  transactionGroup?: AtomicTransactionGroup;
-  algorand: {
-    txnDetails: {
-      from: string;
-      to: string;
-      amount: string;
-      firstRound: number;
-      lastRound: number;
-      lease: string;
-      assetIndex?: number;
-      feePayer?: string;
-    };
-  };
+  paymentIndex?: number;
+  paymentGroup?: string[];
 }
 
 /**
@@ -64,7 +43,6 @@ async function getCurrentRound(client: AlgorandClient): Promise<number> {
  * @param from - The sender's address
  * @param to - The recipient's address
  * @param amount - The payment amount in microAlgos
- * @param lease - The lease field to attest to the payment requirements
  * @param firstRound - The first valid round
  * @param lastRound - The last valid round
  * @param assetIndex - Optional asset ID for ASA transfers
@@ -76,7 +54,6 @@ async function createAtomicTransactionGroup(
   from: string,
   to: string,
   amount: number,
-  lease: Uint8Array,
   firstRound: number,
   lastRound: number,
   assetIndex?: number,
@@ -111,12 +88,6 @@ async function createAtomicTransactionGroup(
     });
   }
 
-  Object.defineProperty(userTransaction, "lease", {
-    value: lease,
-    writable: true,
-    configurable: true,
-  });
-
   if (feePayer) {
     const feePayerParams = { ...params };
     feePayerParams.fee = BigInt(standardFee * 2);
@@ -132,13 +103,15 @@ async function createAtomicTransactionGroup(
     algosdk.assignGroupID(txns);
 
     return {
-      userTransaction,
-      feePayerTransaction,
+      paymentIndex: 1,
+      paymentGroup: txns.map(txn => Buffer.from(txn.toByte()).toString("base64")),
     };
   }
+  const txns = [userTransaction];
 
   return {
-    userTransaction,
+    paymentIndex: 1,
+    paymentGroup: txns.map(txn => Buffer.from(txn.toByte()).toString("base64")),
   };
 }
 
@@ -156,9 +129,7 @@ export async function preparePaymentHeader(
   from: string,
   x402Version: number,
   paymentRequirements: PaymentRequirements,
-): Promise<ExtendedUnsignedPaymentPayload> {
-  const lease = createLeaseFromPaymentRequirements(paymentRequirements);
-
+): Promise<ExactAvmPayload> {
   const currentRound = await getCurrentRound(client);
   const validityWindow = 1000;
   const firstRound = currentRound;
@@ -172,44 +143,13 @@ export async function preparePaymentHeader(
     from,
     paymentRequirements.payTo,
     amount,
-    lease,
     firstRound,
     lastRound,
     paymentRequirements.asset ? parseInt(paymentRequirements.asset as string, 10) : undefined,
     feePayer,
   );
 
-  return {
-    x402Version,
-    scheme: paymentRequirements.scheme,
-    network: paymentRequirements.network,
-    payload: {
-      signature: undefined,
-      authorization: {
-        from,
-        to: paymentRequirements.payTo,
-        value: paymentRequirements.maxAmountRequired,
-        validAfter: firstRound.toString(),
-        validBefore: lastRound.toString(),
-        nonce: `0x${Buffer.from(lease).toString("hex")}`,
-      },
-    },
-    transactionGroup: atomicGroup,
-    algorand: {
-      txnDetails: {
-        from,
-        to: paymentRequirements.payTo,
-        amount: paymentRequirements.maxAmountRequired,
-        firstRound,
-        lastRound,
-        lease: Buffer.from(lease).toString("base64"),
-        assetIndex: paymentRequirements.asset
-          ? parseInt(paymentRequirements.asset as string, 10)
-          : undefined,
-        feePayer,
-      },
-    },
-  };
+  return atomicGroup;
 }
 
 /**
@@ -223,21 +163,16 @@ export async function preparePaymentHeader(
 export async function signPaymentHeader(
   wallet: WalletAccount,
   paymentRequirements: PaymentRequirements,
-  unsignedPaymentHeader: ExtendedUnsignedPaymentPayload,
+  unsignedPaymentHeader: ExactAvmPayload,
 ): Promise<PaymentPayload> {
-  const { transactionGroup } = unsignedPaymentHeader;
-  if (!transactionGroup) {
+  const { paymentIndex, paymentGroup } = unsignedPaymentHeader;
+  if (!paymentGroup) {
     throw new Error("Transaction group is missing from unsigned payment header");
   }
 
-  const { userTransaction, feePayerTransaction } = transactionGroup;
+  const txnGroupBytes: Uint8Array[] = paymentGroup.map(pg => Buffer.from(pg, "base64"));
 
-  const txnGroupBytes: Uint8Array[] = [userTransaction.toByte()];
-  if (feePayerTransaction) {
-    txnGroupBytes.push(feePayerTransaction.toByte());
-  }
-
-  const indexesToSign = feePayerTransaction ? [0] : undefined;
+  const indexesToSign = [paymentIndex];
   const signedTxnGroup = await wallet.signTransactions(txnGroupBytes, indexesToSign);
   const signedUserTxn = signedTxnGroup[0];
   if (!signedUserTxn) {
@@ -245,20 +180,20 @@ export async function signPaymentHeader(
   }
 
   const signedTransaction = Buffer.from(signedUserTxn).toString("base64");
-  const payload: ExactAvmPayload = feePayerTransaction
+  const payload: ExactAvmPayload = paymentRequirements?.extra?.feePayer
     ? {
-      transaction: signedTransaction,
-      feeTransaction: Buffer.from(feePayerTransaction.toByte()).toString("base64"),
+      paymentIndex: 1,
+      paymentGroup: [
+        signedTransaction,
+        paymentGroup[1],
+      ],
     }
     : {
-      transaction: signedTransaction,
+      paymentIndex: 1,
+      paymentGroup: [signedTransaction],
     };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { transactionGroup: _ignoredTransactionGroup, ...unsignedWithoutGroup } =
-    unsignedPaymentHeader;
 
   return {
-    ...unsignedWithoutGroup,
     payload,
   };
 }

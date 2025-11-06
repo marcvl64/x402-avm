@@ -5,7 +5,6 @@ import {
   VerifyResponse,
 } from "../../../types/verify";
 import { AlgorandClient, WalletAccount } from "./types";
-import { verifyLease } from "./utils/leaseUtils";
 import { ExactAvmPayload } from "../../../types/verify/x402Specs";
 import algosdk from "algosdk";
 
@@ -51,7 +50,6 @@ async function getCurrentRound(client: AlgorandClient): Promise<number> {
  * This function performs several verification steps:
  * - Verifies protocol version compatibility
  * - Validates the transaction signature
- * - Verifies the lease field matches the SHA-256 hash of the paymentRequirements
  * - Verifies the transaction is for the correct asset ID
  * - Verifies the transaction amount matches or exceeds paymentRequirements.maxAmountRequired
  * - Verifies the recipient address matches paymentRequirements.payTo
@@ -71,11 +69,19 @@ export async function verify(
 ): Promise<VerifyResponse> {
   try {
     const exactAvmPayload = payload.payload as ExactAvmPayload;
-    const signedTxn = decodeSignedTransaction(exactAvmPayload.transaction);
+    const payloadTransaction = exactAvmPayload?.paymentGroup?.[exactAvmPayload?.paymentIndex - 1];
+    if (!exactAvmPayload || !payloadTransaction) {
+      console.error("Missing fee transaction for fee payer");
+      return {
+        isValid: false,
+        invalidReason: "invalid_exact_avm_payload_atomic_group",
+      };
+    }
+    const signedTxn = decodeSignedTransaction(payloadTransaction);
     const transaction = signedTxn.txn;
     const from = transaction.sender.toString();
     const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
-    if (feePayer && !exactAvmPayload.feeTransaction) {
+    if (feePayer && exactAvmPayload?.paymentGroup?.length === 1) {
       console.error("Missing fee transaction for fee payer");
       return {
         isValid: false,
@@ -85,7 +91,6 @@ export async function verify(
     }
     const firstRound = Number(transaction.firstValid);
     const lastRound = Number(transaction.lastValid);
-    const lease = transaction.lease;
 
     let to: string | undefined;
     let amount = 0;
@@ -158,25 +163,6 @@ export async function verify(
       };
     }
 
-    if (!lease) {
-      console.error("Missing lease in transaction");
-      return {
-        isValid: false,
-        invalidReason: "invalid_exact_avm_payload_lease",
-        payer: from,
-      };
-    }
-
-    const isLeaseValid = verifyLease(lease, paymentRequirements);
-    if (!isLeaseValid) {
-      console.error("Lease does not match payment requirements");
-      return {
-        isValid: false,
-        invalidReason: "invalid_exact_avm_payload_lease",
-        payer: from,
-      };
-    }
-
     if (paymentRequirements.asset) {
       const requiredAssetId = parseInt(paymentRequirements.asset as string, 10);
       if (Number(requiredAssetId) !== 0 && assetIndex !== requiredAssetId) {
@@ -244,7 +230,7 @@ export async function verify(
  * Settles a payment by executing an Algorand transaction
  *
  * This function optionally creates an atomic transaction group:
- * - Transaction 1: Client payment transaction (fee=0 when a fee payer exists, amount=requested, lease set)
+ * - Transaction 1: Client payment transaction (fee=0 when a fee payer exists, amount=requested)
  * - Transaction 2: Facilitator fee-payer transaction (amount=0, fee=cover both) when metadata supplies a fee payer address
  *
  * @param wallet - The facilitator wallet that will submit the transaction
@@ -260,9 +246,9 @@ export async function settle(
   let payer = "unknown";
   try {
     const exactAvmPayload = paymentPayload.payload as ExactAvmPayload;
-    const signedTxn = decodeSignedTransaction(exactAvmPayload.transaction);
+    const signedTxn = decodeSignedTransaction(exactAvmPayload.paymentGroup[exactAvmPayload.paymentIndex - 1]);
     const userTransaction = signedTxn.txn;
-    const feeTransactionBase64 = exactAvmPayload.feeTransaction;
+    const feeTransactionBase64 = exactAvmPayload.paymentGroup[1];
     const from = userTransaction.sender.toString();
     payer = from;
     const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
@@ -296,7 +282,10 @@ export async function settle(
         payer: from,
       };
     }
-    const userTxnBytes = Buffer.from(exactAvmPayload.transaction, "base64");
+    const userTxnBytes = Buffer.from(
+      exactAvmPayload.paymentGroup[exactAvmPayload.paymentIndex - 1],
+      "base64",
+    );
     let txId;
     if (feePayer) {
       if (!feeTransaction) {
@@ -338,17 +327,6 @@ export async function settle(
     };
   } catch (error) {
     console.error("Error during settlement:", error);
-    const message =
-      typeof error === "object" && error && "message" in error ? String(error.message) : "";
-    if (message.toLowerCase().includes("overlapping lease")) {
-      return {
-        success: true,
-        transaction: "",
-        network: paymentPayload.network,
-        payer,
-      };
-    }
-
     return {
       success: false,
       errorReason: "settle_exact_avm_transaction_failed",

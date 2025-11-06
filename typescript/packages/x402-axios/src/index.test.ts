@@ -261,7 +261,7 @@ describe("withPaymentInterceptor()", () => {
     await handler(error);
 
     const lastCall = (selectPaymentRequirements as ReturnType<typeof vi.fn>).mock.calls.at(-1)!;
-    expect(lastCall[1]).toEqual(["algorand", "algorand-testnet"]);
+    expect(lastCall[1]).toEqual(["algorand-mainnet", "algorand-testnet"]);
     expect(createPaymentHeader).toHaveBeenCalledWith(
       algorandWallet,
       1,

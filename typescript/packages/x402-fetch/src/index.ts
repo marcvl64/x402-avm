@@ -72,7 +72,7 @@ export function wrapFetchWithPayment(
         : isSvmSignerWallet(walletClient)
           ? (["solana", "solana-devnet"] as Network[])
           : isAvmSignerWallet(walletClient)
-            ? (["algorand", "algorand-testnet"] as Network[])
+            ? (["algorand-mainnet", "algorand-testnet"] as Network[])
             : undefined;
 
     const selectedPaymentRequirements = paymentRequirementsSelector(

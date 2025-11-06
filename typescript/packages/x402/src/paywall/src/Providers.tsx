@@ -11,7 +11,7 @@ type ProvidersProps = {
   children: ReactNode;
 };
 
-const AVM_NETWORKS = new Set(["algorand", "algorand-testnet"] as const);
+const AVM_NETWORKS = new Set(["algorand-mainnet", "algorand-testnet"] as const);
 /**
  * Resolves the most relevant `PaymentRequirements` for the current runtime configuration.
  *
@@ -25,7 +25,9 @@ function resolvePrimaryRequirements(
     return null;
   }
 
-  const candidates = config.testnet ? ["base-sepolia", "algorand-testnet"] : ["base", "algorand"];
+  const candidates = config.testnet
+    ? ["base-sepolia", "algorand-testnet"]
+    : ["base", "algorand-mainnet"];
   return selectPaymentRequirements(
     [config.paymentRequirements].flat() as PaymentRequirements[],
     candidates as Network[],
@@ -45,7 +47,7 @@ export function Providers({ children }: ProvidersProps) {
   const primaryRequirements = useMemo(() => resolvePrimaryRequirements(config), [config]);
   const isAvm = Boolean(
     primaryRequirements &&
-      AVM_NETWORKS.has(primaryRequirements.network as "algorand" | "algorand-testnet"),
+      AVM_NETWORKS.has(primaryRequirements.network as "algorand-mainnet" | "algorand-testnet"),
   );
 
   if (isAvm) {

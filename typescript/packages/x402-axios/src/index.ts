@@ -77,7 +77,7 @@ export function withPaymentInterceptor(
             : isSvmSignerWallet(walletClient as Signer)
               ? (["solana", "solana-devnet"] as Network[])
               : isAvmSignerWallet(walletClient as Signer)
-                ? (["algorand", "algorand-testnet"] as Network[])
+                ? (["algorand-mainnet", "algorand-testnet"] as Network[])
                 : undefined;
 
         const selectedPaymentRequirements = paymentRequirementsSelector(parsed, network, "exact");

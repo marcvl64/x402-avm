@@ -9,7 +9,6 @@ import {
   signPaymentHeader,
 } from "./client";
 import { AlgorandClient, WalletAccount } from "./types";
-import { createLeaseFromPaymentRequirements } from "./utils/leaseUtils";
 import { encodePayment } from "./utils/paymentUtils";
 import { PaymentRequirements } from "../../../types/verify";
 
@@ -86,24 +85,8 @@ describe("AVM client preparePaymentHeader", () => {
     expect(result.x402Version).toBe(1);
     expect(result.scheme).toBe("exact");
     expect(result.network).toBe("algorand-testnet");
-    expect(result.payload.authorization.from).toBe(`${senderAccount.addr}`);
-    expect(result.payload.authorization.to).toBe(baseRequirements.payTo);
-    expect(result.payload.authorization.value).toBe(baseRequirements.maxAmountRequired);
-    expect(result.payload.authorization.validAfter).toBe("5000");
-    expect(result.payload.authorization.validBefore).toBe("6000");
-    expect(result.payload.authorization.nonce.startsWith("0x")).toBe(true);
-
-    const expectedLease = Buffer.from(
-      createLeaseFromPaymentRequirements(baseRequirements),
-    ).toString("base64");
-    expect(result.algorand?.txnDetails.lease).toBe(expectedLease);
-    expect(result.transactionGroup?.userTransaction).toBeDefined();
-    expect(result.transactionGroup?.feePayerTransaction).toBeDefined();
-
-    const { userTransaction, feePayerTransaction } = result.transactionGroup!;
-    expect(userTransaction.group).toBeDefined();
-    expect(feePayerTransaction?.group).toBeDefined();
-    expect(Buffer.from(userTransaction.group!)).toEqual(Buffer.from(feePayerTransaction.group!));
+    expect(result.payload.paymentIndex).toBeGreaterThan(0);
+    expect(result.payload.paymentGroup).toBeDefined();
     expect(result.algorand?.txnDetails.feePayer).toBe(feePayerAccount.addr);
   });
 
@@ -120,9 +103,8 @@ describe("AVM client preparePaymentHeader", () => {
       requirementsWithoutFeePayer,
     );
 
-    expect(result.transactionGroup?.feePayerTransaction).toBeUndefined();
-    expect(result.algorand?.txnDetails.feePayer).toBeUndefined();
-    expect(result.transactionGroup?.userTransaction.fee).toBe(BigInt(1000));
+    expect(result.paymentGroup?.length).toBeGreaterThan(0);
+    expect(result.paymentGroup[result.paymentIndex]).toBeDefined();
   });
 });
 

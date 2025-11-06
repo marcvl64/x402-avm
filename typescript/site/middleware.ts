@@ -117,7 +117,7 @@ export const middleware = async (req: NextRequest) => {
   if (geolocationResponse) return geolocationResponse;
 
   let price: Price;
-  if (network === "algorand" || network === "algorand-testnet") {
+  if (network === "algorand-mainnet" || network === "algorand-testnet") {
     price = await resolveAlgorandPrice();
   } else {
     // Default non-Algorand price as simple USD-equivalent ALGO

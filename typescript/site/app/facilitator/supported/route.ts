@@ -22,7 +22,7 @@ export async function GET() {
     },
   ];
 
-  if (process.env.NETWORK === "algorand" || process.env.NETWORK === "algorand-testnet") {
+  if (process.env.NETWORK === "algorand-mainnet" || process.env.NETWORK === "algorand-testnet") {
     const algorandFeePayer = process.env.FEE_PAYER;
     kinds.push({
       x402Version: 1,

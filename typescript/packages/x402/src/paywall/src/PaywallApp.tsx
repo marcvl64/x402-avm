@@ -27,9 +27,9 @@ import { useOnrampSessionToken } from "./useOnrampSessionToken";
 import { ensureValidAmount } from "./utils";
 import { useAlgorandWallet, type AlgorandNetwork } from "./useAlgorandWallet";
 
-const AVM_NETWORKS = new Set(["algorand", "algorand-testnet"] as const);
+const AVM_NETWORKS = new Set(["algorand-mainnet", "algorand-testnet"] as const);
 const ALGOD_ENDPOINTS = {
-  algorand: "https://mainnet-api.algonode.cloud",
+  "algorand-mainnet": "https://mainnet-api.algonode.cloud",
   "algorand-testnet": "https://testnet-api.algonode.cloud",
 } as const;
 
@@ -98,7 +98,7 @@ export function PaywallApp(): JSX.Element {
       return undefined;
     }
     return (
-      config.testnet ? ["base-sepolia", "algorand-testnet"] : ["base", "algorand"]
+      config.testnet ? ["base-sepolia", "algorand-testnet"] : ["base", "algorand-mainnet"]
     ) as Network[];
   }, [config]);
 
