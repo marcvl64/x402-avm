@@ -695,6 +695,7 @@ describe("paymentMiddleware()", () => {
     });
 
     const response = await middleware(request);
+    console.log("Middleware response:");
     console.log(response);
 
     expect(response.status).toBe(500);

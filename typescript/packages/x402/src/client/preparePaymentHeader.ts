@@ -20,6 +20,10 @@ export function preparePaymentHeader(
     paymentRequirements.scheme === "exact" &&
     SupportedEVMNetworks.includes(paymentRequirements.network)
   ) {
+    console.log("Preparing EVM payment header");
+    console.log("From:", from);
+    console.log("X402 Version:", x402Version);
+    console.log("Payment Requirements:", paymentRequirements);
     return preparePaymentHeaderExactEVM(from, x402Version, paymentRequirements);
   }
 

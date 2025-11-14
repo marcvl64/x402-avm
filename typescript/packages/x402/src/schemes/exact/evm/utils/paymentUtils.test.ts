@@ -47,7 +47,8 @@ const validSvmPayment: PaymentPayload = {
 };
 
 const validAvmPayload: ExactAvmPayload = {
-  transaction: "QUJDREVGR0g=",
+  paymentGroup: ["QUJDREVGR0g="],
+  paymentIndex: 0,
 };
 
 const validAvmPayment: PaymentPayload = {

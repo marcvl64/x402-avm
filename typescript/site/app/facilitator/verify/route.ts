@@ -96,7 +96,7 @@ export async function POST(req: Request) {
   try {
     paymentRequirements = PaymentRequirementsSchema.parse(body.paymentRequirements);
   } catch (error) {
-    console.error("[X402 Site Facilitator Verify Route] Invalid payment requirements:", error);
+    console.error("Invalid payment requirements:", error);
     return Response.json(
       {
         isValid: false,

@@ -414,10 +414,14 @@ function AvmPaywall({ config, paymentRequirements }: PaywallProps): JSX.Element 
   );
   const assetId = paymentRequirements.asset ?? "0";
   const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
-  const networkLabel = paymentRequirements.network === "algorand" ? "Algorand" : "Algorand Testnet";
+  // Fix: Change "algorand" to "algorand-mainnet" in the comparison
+  const networkLabel =
+    paymentRequirements.network === "algorand-mainnet" ? "Algorand" : "Algorand Testnet";
+
+  // Fix: Use safe access to ALGOD_ENDPOINTS with proper fallback
+  const network = paymentRequirements.network as keyof typeof ALGOD_ENDPOINTS;
   const algodServer =
-    ALGOD_ENDPOINTS[paymentRequirements.network as keyof typeof ALGOD_ENDPOINTS] ??
-    ALGOD_ENDPOINTS.algorand;
+    network in ALGOD_ENDPOINTS ? ALGOD_ENDPOINTS[network] : ALGOD_ENDPOINTS["algorand-mainnet"];
 
   const algodClient = useMemo(() => new algosdk.Algodv2("", algodServer, ""), [algodServer]);
   const algorandClient = useMemo<AlgorandClient>(() => {
@@ -454,7 +458,11 @@ function AvmPaywall({ config, paymentRequirements }: PaywallProps): JSX.Element 
           setFormattedBalance(display);
         } else {
           const parsedId = parseInt(assetId, 10);
-          const assets = (info.assets ?? []) as Array<{ "asset-id": number; amount?: number }>;
+
+          // Fix: Use proper type handling for assets array
+          type AssetInfo = { "asset-id": number; amount?: number };
+          const assets = (info.assets as unknown as AssetInfo[]) || [];
+
           const holding = assets.find(asset => asset["asset-id"] === parsedId);
           const amountRaw = Number(holding?.amount?.toString()) ?? 0;
           const display = (amountRaw / 10 ** decimals).toFixed(decimals);
@@ -602,12 +610,8 @@ function AvmPaywall({ config, paymentRequirements }: PaywallProps): JSX.Element 
         </p>
         {paymentRequirements.network === "algorand-testnet" && (
           <p className="instructions">
-            Need Algorand Testnet funds?{" "}
-            <a
-              href="https://dispenser.testnet.aws.algodev.network/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            Need Algorand Testnet USDC funds?{" "}
+            <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">
               Request them <u>here</u>.
             </a>
           </p>

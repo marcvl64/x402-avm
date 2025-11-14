@@ -16,7 +16,8 @@ import algosdk from "algosdk";
  */
 function decodeSignedTransaction(encodedTxn: string): algosdk.SignedTransaction {
   const txnBytes = Buffer.from(encodedTxn, "base64");
-  return algosdk.decodeSignedTransaction(txnBytes);
+  const decodedSignedTxn = algosdk.decodeSignedTransaction(txnBytes);
+  return decodedSignedTxn;
 }
 
 /**
@@ -69,9 +70,9 @@ export async function verify(
 ): Promise<VerifyResponse> {
   try {
     const exactAvmPayload = payload.payload as ExactAvmPayload;
-    const payloadTransaction = exactAvmPayload?.paymentGroup?.[exactAvmPayload?.paymentIndex - 1];
+    const payloadTransaction = exactAvmPayload?.paymentGroup[exactAvmPayload.paymentIndex];
     if (!exactAvmPayload || !payloadTransaction || exactAvmPayload?.paymentGroup.length > 16) {
-      console.error("Missing fee transaction for fee payer");
+      console.error("Verification failed: Invalid payload structure");
       return {
         isValid: false,
         invalidReason: "invalid_exact_avm_payload_atomic_group",
@@ -82,7 +83,6 @@ export async function verify(
     const from = transaction.sender.toString();
     const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
     if (feePayer && exactAvmPayload?.paymentGroup?.length === 1) {
-      console.error("Missing fee transaction for fee payer");
       return {
         isValid: false,
         invalidReason: "invalid_exact_avm_payload_atomic_group",
@@ -94,7 +94,7 @@ export async function verify(
 
     let to: string | undefined;
     let amount = 0;
-    let assetIndex: number | undefined;
+    let assetId: number | undefined;
 
     if (transaction.type === algosdk.TransactionType.pay) {
       const paymentFields = transaction.payment;
@@ -120,7 +120,7 @@ export async function verify(
       }
       to = assetFields.receiver.toString();
       amount = Number(assetFields.amount ?? 0n);
-      assetIndex = assetFields.assetIndex ? Number(assetFields.assetIndex) : undefined;
+      assetId = assetFields.assetIndex ? Number(assetFields.assetIndex) : undefined;
     } else {
       console.error("Unsupported transaction type:", transaction.type);
       return {
@@ -144,7 +144,7 @@ export async function verify(
     }
 
     const requiredAmount = parseInt(paymentRequirements.maxAmountRequired, 10);
-    if (amount < requiredAmount) {
+    if (amount !== requiredAmount) {
       console.error("Transaction amount is less than required:", amount, requiredAmount);
       return {
         isValid: false,
@@ -165,8 +165,8 @@ export async function verify(
 
     if (paymentRequirements.asset) {
       const requiredAssetId = parseInt(paymentRequirements.asset as string, 10);
-      if (Number(requiredAssetId) !== 0 && assetIndex !== requiredAssetId) {
-        console.error("Asset ID does not match payment requirements:", assetIndex, requiredAssetId);
+      if (Number(requiredAssetId) !== 0 && assetId !== requiredAssetId) {
+        console.error("Asset ID does not match payment requirements:", assetId, requiredAssetId);
         return {
           isValid: false,
           invalidReason: "invalid_exact_avm_payload_asset_id",
@@ -176,8 +176,9 @@ export async function verify(
     }
 
     const accountInfo = await client.client.accountInformation(from).do();
-    if (accountInfo.amount < amount) {
-      console.error("Insufficient funds in account:", accountInfo.amount, amount);
+    const accountBalance = Number(accountInfo.amount ?? 0n);
+    if (accountBalance < amount) {
+      console.error("Insufficient funds in account:", accountBalance, amount);
       return {
         isValid: false,
         invalidReason: "insufficient_funds",
@@ -185,9 +186,9 @@ export async function verify(
       };
     }
 
-    if (assetIndex) {
+    if (assetId) {
       try {
-        const assetInfo = await client.client.accountAssetInformation(from, assetIndex).do();
+        const assetInfo = await client.client.accountAssetInformation(from, assetId).do();
         if (!assetInfo.assetHolding) {
           console.error("Account has not opted in to the ASA");
           return {
@@ -246,13 +247,14 @@ export async function settle(
   let payer = "unknown";
   try {
     const exactAvmPayload = paymentPayload.payload as ExactAvmPayload;
-    const signedTxn = decodeSignedTransaction(exactAvmPayload.paymentGroup[exactAvmPayload.paymentIndex - 1]);
+    const signedTxn = decodeSignedTransaction(exactAvmPayload?.paymentGroup[exactAvmPayload?.paymentIndex]);
     const userTransaction = signedTxn.txn;
-    const feeTransactionBase64 = exactAvmPayload.paymentGroup[1];
+    const feeTransactionBase64 = exactAvmPayload.paymentGroup[0];
     const from = userTransaction.sender.toString();
     payer = from;
     const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
     if (feePayer && !feeTransactionBase64) {
+      console.error("feePayer specified but no fee transaction found in payload");
       console.error("Missing fee transaction for fee payer execution");
       return {
         success: false,
@@ -283,7 +285,7 @@ export async function settle(
       };
     }
     const userTxnBytes = Buffer.from(
-      exactAvmPayload.paymentGroup[exactAvmPayload.paymentIndex - 1],
+      exactAvmPayload.paymentGroup[exactAvmPayload.paymentIndex],
       "base64",
     );
     let txId;
@@ -312,7 +314,7 @@ export async function settle(
         };
       }
 
-      const txnGroup: Uint8Array[] = [userTxnBytes, signedFeeTxn];
+      const txnGroup: Uint8Array[] = [signedFeeTxn, userTxnBytes];
       txId = await wallet.client.sendRawTransaction(txnGroup).do();
     } else {
       txId = await wallet.client.sendRawTransaction([userTxnBytes]).do();

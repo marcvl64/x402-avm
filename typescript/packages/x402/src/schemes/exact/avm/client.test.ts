@@ -11,6 +11,7 @@ import {
 import { AlgorandClient, WalletAccount } from "./types";
 import { encodePayment } from "./utils/paymentUtils";
 import { PaymentRequirements } from "../../../types/verify";
+import { ExactAvmPayload } from "../../../types/verify/x402Specs";
 
 vi.mock("./utils/paymentUtils", () => ({
   encodePayment: vi.fn().mockReturnValue("encoded-avm-payment-header"),
@@ -144,7 +145,11 @@ describe("AVM client signPaymentHeader", () => {
       [expect.any(Uint8Array), expect.any(Uint8Array)],
       [0],
     );
-    expect(signed.payload.transaction).toBe(Buffer.from([1, 2, 3]).toString("base64"));
+
+    // Check that the payload has the correct structure for an AVM payload
+    const avmPayload = signed.payload as ExactAvmPayload;
+    expect(avmPayload.paymentGroup).toBeDefined();
+    expect(avmPayload.paymentGroup[0]).toBe(Buffer.from([1, 2, 3]).toString("base64"));
     expect("transactionGroup" in signed).toBe(false);
   });
 
@@ -200,7 +205,10 @@ describe("AVM client createPaymentHeader", () => {
         x402Version: 1,
         scheme: "exact",
         network: "algorand-testnet",
-        payload: expect.objectContaining({ transaction: expect.any(String) }),
+        payload: expect.objectContaining({
+          paymentIndex: expect.any(Number),
+          paymentGroup: expect.any(Array),
+        }),
       }),
     );
   });
@@ -228,7 +236,11 @@ describe("AVM client createPaymentHeader", () => {
     vi.mocked(wallet.signTransactions).mockResolvedValue([Uint8Array.from([7, 8, 9])]);
     const payment = await createPayment(client, wallet, 1, paymentRequirements);
 
-    expect(payment.payload.transaction).toBe(Buffer.from([7, 8, 9]).toString("base64"));
+    // Check that the payload has the correct structure for an AVM payload
+    const avmPayload = payment.payload as ExactAvmPayload;
+    expect(avmPayload.paymentGroup).toBeDefined();
+    expect(avmPayload.paymentIndex).toBeDefined();
+    expect(avmPayload.paymentGroup[0]).toBe(Buffer.from([7, 8, 9]).toString("base64"));
     expect(payment.scheme).toBe("exact");
     expect(payment.network).toBe("algorand-testnet");
   });

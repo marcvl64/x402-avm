@@ -1,15 +1,15 @@
-import { PaymentPayload, PaymentRequirements, UnsignedPaymentPayload } from "../../../types/verify";
+import { PaymentPayload, PaymentRequirements } from "../../../types/verify";
 import { ExactAvmPayload } from "../../../types/verify/x402Specs";
 import { encodePayment } from "./utils/paymentUtils";
 import { WalletAccount, AlgorandClient } from "./types";
 import algosdk from "algosdk";
 
 /**
- * Interface representing an atomic transaction group
+ * Interface representing a payment payload
  */
 interface AtomicTransactionGroup {
-  paymentIndex?: number;
-  paymentGroup?: string[];
+  paymentIndex: number;
+  paymentGroup: string[];
 }
 
 /**
@@ -45,7 +45,7 @@ async function getCurrentRound(client: AlgorandClient): Promise<number> {
  * @param amount - The payment amount in microAlgos
  * @param firstRound - The first valid round
  * @param lastRound - The last valid round
- * @param assetIndex - Optional asset ID for ASA transfers
+ * @param asset - Optional asset ID for ASA transfers
  * @param feePayer - Optional fee payer address for pooled-fee execution
  * @returns An object containing the user transaction and, when applicable, the fee payer transaction
  */
@@ -56,7 +56,7 @@ async function createAtomicTransactionGroup(
   amount: number,
   firstRound: number,
   lastRound: number,
-  assetIndex?: number,
+  asset?: number,
   feePayer?: string,
 ): Promise<AtomicTransactionGroup> {
   const standardFee = 1000;
@@ -69,12 +69,12 @@ async function createAtomicTransactionGroup(
   params.fee = BigInt(feePayer ? 0 : standardFee);
 
   let userTransaction;
-  if (assetIndex) {
+  if (asset) {
     userTransaction = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
       sender: from,
       receiver: to,
       amount: amount,
-      assetIndex: assetIndex,
+      assetIndex: asset, // Use assetIndex parameter name as expected by the SDK
       closeRemainderTo: undefined,
       note: undefined,
       suggestedParams: params,
@@ -99,7 +99,7 @@ async function createAtomicTransactionGroup(
       suggestedParams: feePayerParams,
     });
 
-    const txns = [userTransaction, feePayerTransaction];
+    const txns = [feePayerTransaction, userTransaction];
     algosdk.assignGroupID(txns);
 
     return {
@@ -169,12 +169,10 @@ export async function signPaymentHeader(
   if (!paymentGroup) {
     throw new Error("Transaction group is missing from unsigned payment header");
   }
-
   const txnGroupBytes: Uint8Array[] = paymentGroup.map(pg => Buffer.from(pg, "base64"));
-
-  const indexesToSign = [paymentIndex];
+  const indexesToSign = [paymentIndex]; // This should always be [0] now
   const signedTxnGroup = await wallet.signTransactions(txnGroupBytes, indexesToSign);
-  const signedUserTxn = signedTxnGroup[0];
+  const signedUserTxn = signedTxnGroup[1];
   if (!signedUserTxn) {
     throw new Error("Wallet did not return a signed user transaction");
   }
@@ -183,7 +181,7 @@ export async function signPaymentHeader(
   const payload: ExactAvmPayload = paymentRequirements?.extra?.feePayer
     ? {
       paymentIndex: 1,
-      paymentGroup: [signedTransaction, paymentGroup[1]],
+      paymentGroup: [paymentGroup[0], signedTransaction],
     }
     : {
       paymentIndex: 0,
@@ -191,6 +189,9 @@ export async function signPaymentHeader(
     };
 
   return {
+    x402Version: 1, // Add x402Version property
+    scheme: "exact", // Add scheme property
+    network: paymentRequirements.network, // Add network property
     payload,
   };
 }

@@ -11,6 +11,7 @@ import {
   SupportedAVMNetworks,
 } from "../types/shared";
 import { PaymentRequirements, UnsignedPaymentPayload } from "../types/verify";
+import { ExactAvmPayload } from "../types/verify/x402Specs";
 
 /**
  * Signs a payment header using the provided client and payment requirements.
@@ -50,11 +51,19 @@ export async function signPaymentHeader(
       throw new Error("Invalid Algorand wallet client provided");
     }
 
+    // Use type assertion with a specific check to ensure this is an ExactAvmPayload
+    const avmPayload = unsignedPaymentHeader?.payload as unknown as ExactAvmPayload;
+    console.log("[X402 CLIENT] AVM Payload:", avmPayload);
+    if (!avmPayload.paymentGroup || typeof avmPayload.paymentIndex !== 'number') {
+      throw new Error("Invalid AVM payload structure");
+    }
+
     const signedPaymentHeader = await signPaymentHeaderExactAVM(
       avmWallet,
       paymentRequirements,
-      unsignedPaymentHeader as Parameters<typeof signPaymentHeaderExactAVM>[2],
+      avmPayload
     );
+    console.log("[X402 CLIENT] Signed AVM Payment Header:", signedPaymentHeader);
     return encodePayment(signedPaymentHeader);
   }
 
