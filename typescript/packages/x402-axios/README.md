@@ -1,4 +1,6 @@
-# x402-axios
+# x402-axios-avm
+
+IMPORTANT: This package is temporary and works until the [x402 Algorand specification](https://github.com/coinbase/x402/pull/361) and following implementation PR are reviewed and merged by Coinbase. Until then, this package contains X402 core protocol plus support for Algorand-specific types and utilities.
 
 A utility package that extends Axios to automatically handle 402 Payment Required responses using the x402 payment protocol. This package enables seamless integration of payment functionality into your applications when making HTTP requests with Axios.
 
@@ -30,7 +32,7 @@ const api = withPaymentInterceptor(
   axios.create({
     baseURL: "https://api.example.com",
   }),
-  client
+  client,
 );
 
 // Make a request that may require payment
@@ -76,6 +78,7 @@ Adds a response interceptor to an Axios instance to handle 402 Payment Required 
 #### Returns
 
 The modified Axios instance with the payment interceptor that will:
+
 1. Intercept 402 responses
 2. Parse the payment requirements
 3. Create a payment header using the provided wallet client
