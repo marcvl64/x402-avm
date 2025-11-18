@@ -7,7 +7,7 @@ A utility package that extends the native `fetch` API to automatically handle 40
 ## Installation
 
 ```bash
-npm install x402-fetch
+npm install x402-fetch-avm
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install x402-fetch
 ```typescript
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { wrapFetchWithPayment } from "x402-fetch";
+import { wrapFetchWithPayment } from "x402-fetch-avm";
 import { baseSepolia } from "viem/chains";
 
 // Create a wallet client
@@ -66,7 +66,7 @@ A wrapped fetch function that automatically handles 402 responses by:
 import { config } from "dotenv";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { wrapFetchWithPayment } from "x402-fetch";
+import { wrapFetchWithPayment } from "x402-fetch-avm";
 import { baseSepolia } from "viem/chains";
 
 config();
@@ -100,7 +100,7 @@ fetchWithPay(API_URL, {
 `wrapFetchWithPayment` also works with Algorand wallets. Provide any object that implements the x402 Algorand signer interface (`address` plus an async `signTransactions` function) and the helper automatically prefers Algorand (or Algorand Testnet) payment requirements when they exist.
 
 ```typescript
-import { wrapFetchWithPayment } from "x402-fetch";
+import { wrapFetchWithPayment } from "x402-fetch-avm";
 
 const algorandWallet = {
   address: account.address,

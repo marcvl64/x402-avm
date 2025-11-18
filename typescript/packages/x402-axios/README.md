@@ -7,7 +7,7 @@ A utility package that extends Axios to automatically handle 402 Payment Require
 ## Installation
 
 ```bash
-npm install x402-axios
+npm install x402-axios-avm
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install x402-axios
 ```typescript
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { withPaymentInterceptor } from "x402-axios";
+import { withPaymentInterceptor } from "x402-axios-avm;
 import axios from "axios";
 import { baseSepolia } from "viem/chains";
 
@@ -45,7 +45,7 @@ console.log(response.data);
 Provide any object that implements the Algorand signer interface (`address` plus `signTransactions`) and the interceptor will automatically target Algorand (or Algorand Testnet) payment requirements when they are offered.
 
 ```typescript
-import { withPaymentInterceptor } from "x402-axios";
+import { withPaymentInterceptor } from "x402-axios-avm";
 
 const algorandWallet = {
   address: account.address,

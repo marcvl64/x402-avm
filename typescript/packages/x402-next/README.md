@@ -7,7 +7,7 @@ Next.js middleware integration for the x402 Payment Protocol. This package allow
 ## Installation
 
 ```bash
-npm install x402-next
+npm install x402-next-avm
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install x402-next
 Create a middleware file in your Next.js project (e.g., `middleware.ts`):
 
 ```typescript
-import { paymentMiddleware, Network } from "x402-next";
+import { paymentMiddleware, Network } from "x402-next-avm";
 
 export const middleware = paymentMiddleware("0xYourAddress", {
   "/protected": {
