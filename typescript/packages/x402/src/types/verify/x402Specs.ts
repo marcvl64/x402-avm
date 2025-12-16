@@ -51,6 +51,8 @@ export const ErrorReasons = [
   "invalid_exact_avm_payload_atomic_group",
   "invalid_exact_avm_payload_fee_structure",
   "invalid_exact_avm_payload_asa_opt_in_required",
+  "invalid_exact_avm_payload_simulation",
+  "invalid_exact_avm_payload_simulation_error",
   "settle_exact_avm_transaction_failed",
   // General error reasons
   "invalid_network",

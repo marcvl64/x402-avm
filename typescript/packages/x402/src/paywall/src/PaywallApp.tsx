@@ -414,7 +414,6 @@ function AvmPaywall({ config, paymentRequirements }: PaywallProps): JSX.Element 
   );
   const assetId = paymentRequirements.asset ?? "0";
   const feePayer = (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer;
-  // Fix: Change "algorand" to "algorand-mainnet" in the comparison
   const networkLabel =
     paymentRequirements.network === "algorand-mainnet" ? "Algorand" : "Algorand Testnet";
 

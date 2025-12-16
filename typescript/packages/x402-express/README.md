@@ -61,7 +61,7 @@ type RoutesConfig = Record<string, Price | RouteConfig>;
 
 interface RouteConfig {
   price: Price; // Price in USD or token amount
-  network: Network; // e.g. "base", "solana", "algorand"
+  network: Network; // e.g. "base", "solana", "algorand-mainnet"
   config?: PaymentMiddlewareConfig;
 }
 ```
@@ -91,7 +91,7 @@ app.use(
         amount: "250000",
         asset: { id: "31566704", decimals: 6 },
       },
-      network: "algorand",
+      network: "-testnet",
     },
   }),
 );

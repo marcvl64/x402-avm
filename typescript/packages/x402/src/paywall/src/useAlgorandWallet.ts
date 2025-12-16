@@ -55,7 +55,7 @@ export function useAlgorandWallet(
     });
 
     const networks = builder.build();
-    const defaultNetwork = network === "algorand" ? NetworkId.MAINNET : NetworkId.TESTNET;
+    const defaultNetwork = network === "algorand-mainnet" ? NetworkId.MAINNET : NetworkId.TESTNET;
 
     const instance = new WalletManager({
       wallets: [WalletId.PERA],

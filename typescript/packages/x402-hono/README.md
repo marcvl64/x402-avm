@@ -94,7 +94,7 @@ app.use(
         amount: "250000", // atomic units (0.25 with 6 decimals)
         asset: { id: "31566704", decimals: 6 },
       },
-      network: "algorand",
+      network: "algorand-testnet",
     },
   }),
 );

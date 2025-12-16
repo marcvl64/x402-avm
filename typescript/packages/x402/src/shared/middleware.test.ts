@@ -419,7 +419,7 @@ describe("processPriceToAtomicAmount", () => {
       },
     };
 
-    const result = processPriceToAtomicAmount(asaPrice, "algorand");
+    const result = processPriceToAtomicAmount(asaPrice, "algorand-testnet");
     expect(result).toEqual({
       maxAmountRequired: "250000",
       asset: asaPrice.asset,
