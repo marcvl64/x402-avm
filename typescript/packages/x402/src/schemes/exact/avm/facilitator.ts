@@ -314,13 +314,13 @@ export async function verify(
       });
       const simulationResult = await client.client.simulateTransactions(request).do();
 
-      if (!simulationResult.success) {
-        console.error("Transaction simulation failed:", simulationResult.message);
+      if (!simulationResult.txnGroups) {
+        console.error("Transaction simulation failed:", simulationResult.txnGroups);
         // Use our new invalidReason for simulation failures
         return {
           isValid: false,
           invalidReason: "invalid_exact_avm_payload_simulation",
-          payer
+          payer,
         };
       }
     } catch (simulationError) {
