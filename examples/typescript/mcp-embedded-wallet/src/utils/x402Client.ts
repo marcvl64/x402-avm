@@ -1,7 +1,7 @@
 import axios from "axios";
 import { base, baseSepolia } from "viem/chains";
-import { withPaymentInterceptor } from "x402-axios";
-import { PaymentRequirements } from "x402/types";
+import { withPaymentInterceptor } from "x402-axios-avm";
+import { PaymentRequirements } from "x402-avm/types";
 import { budgetStore } from "../stores/budget";
 import { operationStore, SettlementInfo } from "../stores/operations";
 import { getBlockExplorerUrl, formatUSDC } from "./chainConfig";
@@ -237,11 +237,10 @@ async function updateOperationForSuccess(
     } else if (operation.type === "http" && !httpOperationUpdated) {
       // Only update the first HTTP operation to avoid duplicates
       operationStore.getState().updateHttpOperation(index, {
-        description: `Payment required: ${
-          operation.selectedPayment
-            ? formatUSDC(operation.selectedPayment.maxAmountRequired)
-            : "unknown amount"
-        }`,
+        description: `Payment required: ${operation.selectedPayment
+          ? formatUSDC(operation.selectedPayment.maxAmountRequired)
+          : "unknown amount"
+          }`,
         status: "success",
         errorMessage: undefined, // Clear any previous error message
         settlementInfo: settlementInfo, // Add settlement info with transaction hash

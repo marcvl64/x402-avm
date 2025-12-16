@@ -1,6 +1,6 @@
 import axios from "axios";
 import { config } from "dotenv";
-import { withPaymentInterceptor, decodeXPaymentResponse, createSigner, type Hex } from "x402-axios";
+import { withPaymentInterceptor, decodeXPaymentResponse, createSigner, type Hex } from "x402-axios-avm";
 
 config();
 

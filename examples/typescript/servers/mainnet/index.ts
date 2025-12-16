@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import express from "express";
-import { paymentMiddleware } from "x402-express";
+import { paymentMiddleware } from "x402-express-avm";
 // Import the facilitator from the x402 package to use the mainnet facilitator
 import { facilitator } from "@coinbase/x402";
 

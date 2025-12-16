@@ -43,7 +43,7 @@ The example demonstrates how to:
 import { config } from "dotenv";
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { wrapFetchWithPayment } from "x402-fetch";
+import { wrapFetchWithPayment } from "x402-fetch-avm";
 import { baseSepolia } from "viem/chains";
 
 config();

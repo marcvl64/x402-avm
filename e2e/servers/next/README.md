@@ -38,7 +38,7 @@ The `/protected` route requires a payment of $0.01 to access. The route is prote
 
 ```typescript
 // middleware.ts
-import { paymentMiddleware, Network, Resource } from "x402-next";
+import { paymentMiddleware, Network, Resource } from "x402-next-avm";
 
 const facilitatorUrl = process.env.NEXT_PUBLIC_FACILITATOR_URL as Resource;
 const payTo = process.env.RESOURCE_WALLET_ADDRESS as Address;

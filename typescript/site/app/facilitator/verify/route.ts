@@ -9,9 +9,9 @@ import {
   VerifyResponse,
   createConnectedClient,
   createSigner,
-} from "x402/types";
-import { AlgodClientOptions, createAlgorandClient } from "x402/shared/avm";
-import { verify } from "x402/facilitator";
+} from "x402-avm/types";
+import { AlgodClientOptions, createAlgorandClient } from "x402-avm/shared/avm";
+import { verify } from "x402-avm/facilitator";
 
 type VerifyRequest = {
   paymentPayload: PaymentPayload;

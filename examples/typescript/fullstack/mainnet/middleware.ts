@@ -1,6 +1,6 @@
 import { facilitator } from "@coinbase/x402";
 import { Address } from "viem";
-import { paymentMiddleware } from "x402-next";
+import { paymentMiddleware } from "x402-next-avm";
 
 const payTo = process.env.RESOURCE_WALLET_ADDRESS as Address;
 

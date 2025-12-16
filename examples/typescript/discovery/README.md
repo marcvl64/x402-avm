@@ -37,7 +37,7 @@ The example demonstrates how to:
 ## Example Code
 
 ```typescript
-import { useFacilitator } from "x402/verify";
+import { useFacilitator } from "x402-avm/verify";
 import { facilitator } from "@coinbase/x402";
 
 // No API keys required for discovery

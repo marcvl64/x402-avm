@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { Address, getAddress } from "viem";
 import type { Address as SolanaAddress } from "@solana/kit";
-import { exact } from "x402/schemes";
+import { exact } from "x402-avm/schemes";
 import {
   computeRoutePatterns,
   findMatchingPaymentRequirements,
@@ -10,7 +10,7 @@ import {
   getPaywallHtml,
   processPriceToAtomicAmount,
   toJsonSafe,
-} from "x402/shared";
+} from "x402-avm/shared";
 import {
   ASAAmount,
   FacilitatorConfig,
@@ -25,9 +25,9 @@ import {
   SupportedAVMNetworks,
   SupportedEVMNetworks,
   SupportedSVMNetworks,
-} from "x402/types";
-import { useFacilitator } from "x402/verify";
-import { safeBase64Encode } from "x402/shared";
+} from "x402-avm/types";
+import { useFacilitator } from "x402-avm/verify";
+import { safeBase64Encode } from "x402-avm/shared";
 
 import { POST } from "./api/session-token";
 
@@ -459,7 +459,7 @@ export type {
   RouteConfig,
   RoutesConfig,
   Price,
-} from "x402/types";
+} from "x402-avm/types";
 export type { Address as SolanaAddress } from "@solana/kit";
 export type { Address as AlgorandAddress } from "algosdk";
 

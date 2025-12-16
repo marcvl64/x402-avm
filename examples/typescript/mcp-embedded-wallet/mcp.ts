@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { focusApp, operations } from "./electron";
 import { logger } from "./logger";
-import { useFacilitator } from "x402/verify";
+import { useFacilitator } from "x402-avm/verify";
 import { createFacilitatorConfig } from "@coinbase/x402";
 import { ipcMain } from "electron";
 

@@ -125,7 +125,7 @@ export default nextConfig;
 
 ```ts
 // middleware.ts
-import { paymentMiddleware } from "x402-next";
+import { paymentMiddleware } from "x402-next-avm";
 import { facilitator } from "@coinbase/x402";
 
 export const middleware = paymentMiddleware(
@@ -153,7 +153,7 @@ export const config = {
 {
   "dependencies": {
     "next": "canary", // TEMPORARY: Only needed until Edge runtime support is added
-    "x402-next": "^1.0.0",
+    "x402-next-avm": "^1.0.0",
     "@coinbase/x402": "^1.0.0"
     // other dependencies
   }
@@ -198,7 +198,7 @@ Create an API route that matches the path you configured above:
 
 ```typescript
 // app/api/x402/session-token/route.ts
-export { POST } from "x402-next";
+export { POST } from "x402-next-avm";
 ```
 
 That's it! The `x402-next` package provides the complete session token implementation.
@@ -251,7 +251,7 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 3. **API route not found**
    - Ensure you've created your session token API route at the path you configured
    - Check that your API route path matches your `sessionTokenEndpoint` configuration
-   - Verify the export: `export { POST } from "x402-next";`
+   - Verify the export: `export { POST } from "x402-next-avm";`
    - Example: If you configured `sessionTokenEndpoint: "/api/custom/onramp"`, create `app/api/custom/onramp/route.ts`
 
 ## Resources

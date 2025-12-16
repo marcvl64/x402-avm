@@ -38,7 +38,7 @@ The `/protected` route requires a payment of $0.001 to access. The route is prot
 
 ```typescript
 // middleware.ts
-import { paymentMiddleware, Network, Resource } from "x402-next";
+import { paymentMiddleware, Network, Resource } from "x402-next-avm";
 import { facilitator } from "@coinbase/x402";
 
 const payTo = process.env.RESOURCE_WALLET_ADDRESS as Address;

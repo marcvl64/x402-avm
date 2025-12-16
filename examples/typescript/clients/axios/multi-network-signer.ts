@@ -6,7 +6,7 @@ import {
   createSigner,
   type Hex,
   MultiNetworkSigner,
-} from "x402-axios";
+} from "x402-axios-avm";
 
 config();
 

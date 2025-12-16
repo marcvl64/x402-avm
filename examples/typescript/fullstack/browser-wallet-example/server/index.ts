@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { cors } from "hono/cors";
-import { paymentMiddleware, Network, Resource } from "x402-hono";
+import { paymentMiddleware, Network, Resource } from "x402-hono-avm";
 import { v4 as uuidv4 } from "uuid";
 
 config();
@@ -97,7 +97,7 @@ app.post("/api/pay/session", (c) => {
   const sessionId = uuidv4();
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
-  
+
   const session: Session = {
     id: sessionId,
     createdAt: now,
@@ -125,7 +125,7 @@ app.post("/api/pay/session", (c) => {
 app.post("/api/pay/onetime", async (c) => {
   const sessionId = uuidv4();
   const now = new Date();
-  
+
   const session: Session = {
     id: sessionId,
     createdAt: now,
@@ -163,8 +163,8 @@ app.get("/api/session/:sessionId", (c) => {
   const isUsed = session.type === "onetime" && session.used;
 
   if (isExpired || isUsed) {
-    return c.json({ 
-      valid: false, 
+    return c.json({
+      valid: false,
       error: isExpired ? "Session expired" : "One-time access already used",
       session: {
         id: session.id,

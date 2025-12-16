@@ -1,7 +1,7 @@
 /* eslint-env node */
 import { config } from "dotenv";
 import express, { Request, Response } from "express";
-import { verify, settle } from "x402/facilitator";
+import { verify, settle } from "x402-avm/facilitator";
 import {
   PaymentRequirementsSchema,
   type PaymentRequirements,
@@ -15,7 +15,7 @@ import {
   ConnectedClient,
   SupportedPaymentKind,
   isSvmSignerWallet,
-} from "x402/types";
+} from "x402-avm/types";
 
 config();
 

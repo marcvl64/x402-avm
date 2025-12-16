@@ -17,11 +17,11 @@ This package optionally uses CDP API keys from the [Coinbase Developer Platform]
 
 ### Endpoint Authentication Requirements
 
-| Endpoint | Authentication Required | Purpose |
-|----------|------------------------|---------|
-| `list` | ❌ No | Discover available bazaar items and payment options |
-| `verify` | ✅ Yes | Verify payment transactions |
-| `settle` | ✅ Yes | Settle completed payments |
+| Endpoint | Authentication Required | Purpose                                             |
+| -------- | ----------------------- | --------------------------------------------------- |
+| `list`   | ❌ No                   | Discover available bazaar items and payment options |
+| `verify` | ✅ Yes                  | Verify payment transactions                         |
+| `settle` | ✅ Yes                  | Settle completed payments                           |
 
 **Note:** Environment variables are only required when using the `verify` and `settle` endpoints. The `list` endpoint can be used without authentication to discover bazaar items.
 
@@ -46,21 +46,23 @@ const facilitator = createFacilitatorConfig("your-cdp-api-key-id", "your-cdp-api
 
 ```typescript
 import express from "express";
-import { paymentMiddleware } from "x402-express";
+import { paymentMiddleware } from "x402-express-avm";
 import { facilitator } from "@coinbase/x402";
 
 const app = express();
 
 // Requires CDP_API_KEY_ID and CDP_API_KEY_SECRET environment variables
 // for payment verification and settlement
-app.use(paymentMiddleware(
-  "0xYourAddress",
-  {
-    "/protected": {
-      price: "$0.10",
-      network: "base-sepolia"
-    }
-  },
-  facilitator // Use Coinbase's facilitator
-));
+app.use(
+  paymentMiddleware(
+    "0xYourAddress",
+    {
+      "/protected": {
+        price: "$0.10",
+        network: "base-sepolia",
+      },
+    },
+    facilitator, // Use Coinbase's facilitator
+  ),
+);
 ```

@@ -12,7 +12,7 @@
     "react-dom": "^18.3.1",
     "viem": "^2.31.3",
     "axios": "^1.10.0",
-    "x402-axios": "^0.4.0"
+    "x402-axios-avm": "^0.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.17",
@@ -21,4 +21,4 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
   }
-} 
+}

@@ -1,6 +1,6 @@
-import { paymentMiddleware, Resource, Network, Price } from "x402-next";
+import { paymentMiddleware, Resource, Network, Price } from "x402-next-avm";
 import { NextRequest, NextResponse } from "next/server";
-import { AlgodClientOptions, createAlgorandClient } from "x402/shared/avm";
+import { AlgodClientOptions, createAlgorandClient } from "x402-avm/shared/avm";
 
 const address = process.env.RESOURCE_WALLET_ADDRESS as string;
 const network = process.env.NETWORK as Network;

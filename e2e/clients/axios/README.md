@@ -43,7 +43,7 @@ The example demonstrates how to:
 import { config } from "dotenv";
 import { createWalletClient, http, publicActions } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { withPaymentInterceptor } from "x402-axios";
+import { withPaymentInterceptor } from "x402-axios-avm";
 import axios from "axios";
 import { baseSepolia } from "viem/chains";
 

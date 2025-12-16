@@ -1,4 +1,4 @@
-import { settle } from "x402/facilitator";
+import { settle } from "x402-avm/facilitator";
 import {
   PaymentPayload,
   PaymentPayloadSchema,
@@ -9,8 +9,8 @@ import {
   SupportedEVMNetworks,
   SupportedSVMNetworks,
   createSigner,
-} from "x402/types";
-import { AlgodClientOptions, createSigner as createAlgorandSigner } from "x402/shared/avm";
+} from "x402-avm/types";
+import { AlgodClientOptions, createSigner as createAlgorandSigner } from "x402-avm/shared/avm";
 
 type SettleRequest = {
   paymentPayload: PaymentPayload;

@@ -43,7 +43,7 @@
     "viem": "^2.21.26",
     "winston": "^3.17.0",
     "x402": "workspace:*",
-    "x402-axios": "workspace:*",
+    "x402-axios-avm": "workspace:*",
     "zod": "^3.23.8",
     "zustand": "^5.0.6"
   },

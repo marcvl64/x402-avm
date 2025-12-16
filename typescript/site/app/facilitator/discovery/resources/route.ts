@@ -3,7 +3,7 @@ import {
   ListDiscoveryResourcesRequest,
   ListDiscoveryResourcesResponse,
   ListDiscoveryResourcesResponseSchema,
-} from "x402/types";
+} from "x402-avm/types";
 
 /**
  * This route is used to discover the available services on the facilitator.

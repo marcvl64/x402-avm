@@ -8,12 +8,12 @@ import {
   isSvmSignerWallet,
   isAvmSignerWallet,
   Network,
-} from "x402/types";
+} from "x402-avm/types";
 import {
   createPaymentHeader,
   PaymentRequirementsSelector,
   selectPaymentRequirements,
-} from "x402/client";
+} from "x402-avm/client";
 
 /**
  * Enables the payment of APIs using the x402 payment protocol.
@@ -114,6 +114,6 @@ export function wrapFetchWithPayment(
   };
 }
 
-export { decodeXPaymentResponse } from "x402/shared";
-export { createSigner, type Signer, type MultiNetworkSigner } from "x402/types";
+export { decodeXPaymentResponse } from "x402-avm/shared";
+export { createSigner, type Signer, type MultiNetworkSigner } from "x402-avm/types";
 export type { Hex } from "viem";
