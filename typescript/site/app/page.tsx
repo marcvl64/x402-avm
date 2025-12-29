@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 import {
   BoltIcon,
   CloudIcon,
@@ -12,67 +12,70 @@ import {
   BookOpenIcon,
   BriefcaseIcon,
   Squares2X2Icon,
-} from '@heroicons/react/24/outline';
-import { FeatureItem } from './components/FeatureItem';
-import GithubIcon from './assets/github.svg';
-import DiscordIcon from './assets/discord.svg';
-import { Section } from './components/Section';
-import { BackgroundVideo } from './components/BackgroundVideo';
-import NavBar from './components/NavBar';
+} from "@heroicons/react/24/outline";
+
+import { FeatureItem } from "./components/FeatureItem";
+import GithubIcon from "./assets/github.svg";
+import DiscordIcon from "./assets/discord.svg";
+import LogoIcon from "./assets/logo.svg";
+import AlgoIcon from "./assets/algorand-logomark-white-RGB.svg";
+import { Section } from "./components/Section";
+import { BackgroundVideo } from "./components/BackgroundVideo";
+import NavBar from "./components/NavBar";
 
 const whatIsItFeatures = [
   {
-    title: 'No fees',
-    description: 'x402 as a protocol has 0 fees for either the customer or the merchant.',
+    title: "No fees",
+    description: "x402 as a protocol has 0 fees for either the customer or the merchant.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Instant settlement',
+    title: "Instant settlement",
     description:
-      'Accept payments at the speed of the blockchain. Money in your wallet in 2 seconds, not T+2.',
+      "Accept payments at the speed of the blockchain. Money in your wallet in 2 seconds, not T+2.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Blockchain Agnostic',
+    title: "Blockchain Agnostic",
     description:
-      'x402 is not tied to any specific blockchain or token, its a neutral standard open to integration by all.',
+      "x402 is not tied to any specific blockchain or token, its a neutral standard open to integration by all.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Frictionless',
+    title: "Frictionless",
     description:
       "As little as 1 line of middleware code or configuration in your existing web server stack and you can start accepting payments. Customers and agents aren't required to create an account or provide any personal information.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
 
   {
-    title: 'Security & trust via an open standard',
+    title: "Security & trust via an open standard",
     description:
       "Anyone can implement or extend x402. It's not tied to any centralized provider, and encourages broad community participation.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Web native',
+    title: "Web native",
     description:
-      'Activates the dormant 402 HTTP status code and works with any HTTP stack. It works simply via headers and status codes on your existing HTTP server.',
+      "Activates the dormant 402 HTTP status code and works with any HTTP stack. It works simply via headers and status codes on your existing HTTP server.",
     icon: <CheckIcon className="w-5 h-5 text-indigo-400" />,
   },
 ];
 const whyItMattersFeatures = [
   {
-    title: 'AI Agents',
-    description: 'Agents can use the x402 Protocol to pay for API requests in real-time.',
+    title: "AI Agents",
+    description: "Agents can use the x402 Protocol to pay for API requests in real-time.",
     icon: <BoltIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Cloud Storage Providers',
+    title: "Cloud Storage Providers",
     description:
-      'Using x402, customers can easily access storage services without account creation.',
+      "Using x402, customers can easily access storage services without account creation.",
     icon: <CloudIcon className="w-5 h-5 text-indigo-400" />,
   },
   {
-    title: 'Content Creators',
-    description: 'x402 unlocks instant transactions, enabling true micropayments for content.',
+    title: "Content Creators",
+    description: "x402 unlocks instant transactions, enabling true micropayments for content.",
     icon: <MusicalNoteIcon className="w-5 h-5 text-indigo-400" />,
   },
 ];
@@ -83,7 +86,7 @@ export default function Home() {
       {/* Video Background */}
       <div className="fixed w-full z-0">
         <div className="fixed w-full bg-gradient-to-t from-black" />
-        <BackgroundVideo src="/neonblobs.mp4" />
+        <BackgroundVideo src="/banner.mp4" />
       </div>
 
       <div className="relative z-10">
@@ -92,25 +95,33 @@ export default function Home() {
         {/* Hero Section */}
         <section className="max-w-6xl mx-auto px-4 py-20 lg:py-28">
           <div className="text-center">
-            <div className="mb-6">
+            <div className="mb-6 flex items-center justify-center gap-4">
               <Image
                 src="/x402-logo.png"
                 alt="x402 logo"
                 width={320}
                 height={160}
-                className="mx-auto"
+                className="inline-block"
+              />
+              <Image
+                src="/algorand-logomark-white-RGB.png"
+                alt="Algorand logo"
+                width={100}
+                height={100}
+                className="inline-block"
               />
             </div>
+
             <p className="text-xl text-gray-400 mb-8 font-mono">
-              An open protocol for internet-native payments
+              X402 internet-native protocol for Algorand Blockchain
             </p>
             <div className="flex flex-wrap gap-4 mb-6 justify-center">
               <Link
-                href="/ecosystem"
+                href="/protected"
                 className="px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-mono transition-colors flex items-center gap-2 text-lg"
               >
-                <Squares2X2Icon className="w-5 h-5 mr-1" />
-                View Ecosystem
+                <CodeBracketIcon className="w-5 h-5 mr-1" />
+                Live Demo Instance (TestNet)
               </Link>
             </div>
             <div className="flex flex-wrap gap-4 mb-8 justify-center">
@@ -121,7 +132,7 @@ export default function Home() {
                 className="px-4 py-3 border-2 border-transparent hover:border-blue-600 rounded-lg font-mono transition-colors flex items-center gap-2 text-sm"
               >
                 <DocumentTextIcon className="w-5 h-5 mr-1" />
-                Read the whitepaper
+                Read x402 whitepaper
               </Link>
               <Link
                 href="https://x402.gitbook.io/x402"
@@ -130,16 +141,25 @@ export default function Home() {
                 className="px-4 py-3 border-2 border-transparent hover:border-blue-600 rounded-lg font-mono transition-colors flex items-center gap-2 text-sm"
               >
                 <BookOpenIcon className="w-5 h-5 mr-1" />
-                Read the docs
+                Read x402 docs
               </Link>
               <Link
-                href="/protected"
+                href="https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-guide/README.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-3 border-2 border-transparent hover:border-blue-600 rounded-lg font-mono transition-colors flex items-center gap-2 text-sm"
               >
-                <CodeBracketIcon className="w-5 h-5 mr-1" />
-                Try it out
+                <AlgoIcon className="w-10 h-10 mr-1" />
+                Read Algorand x402 docs
+              </Link>
+              <Link
+                href="/ecosystem"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-3 border-2 border-transparent hover:border-blue-600 rounded-lg font-mono transition-colors flex items-center gap-2 text-sm"
+              >
+                <Squares2X2Icon className="w-5 h-5 mr-1" />
+                Algorand x402 Ecosystem
               </Link>
             </div>
           </div>
@@ -148,14 +168,14 @@ export default function Home() {
         <Section>
           {/* What is it? */}
           <div className="relative">
-            <div className="flex items-center gap-4 mb-6">
-              <h3 className="text-3xl font-bold text-blue-400">
-                The best way to accept digital payments.
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <h3 className="text-3xl font-bold text-blue-400 text-center">
+                The best way to accept digital payments on Algorand.
               </h3>
             </div>
             <div className="bg-gray-800/30 rounded-2xl p-8 backdrop-blur-2xl border border-gray-700/50">
               <p className="text-gray-300 leading-relaxed text-xl mb-8">
-                Built around the{' '}
+                Built by Coinbase around the{" "}
                 <Link
                   href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402"
                   target="_blank"
@@ -163,10 +183,13 @@ export default function Home() {
                   className="text-blue-400 hover:text-blue-500"
                 >
                   HTTP 402
-                </Link>{' '}
-                status code,{' '}
-                <span className="font-bold">x402 enables users to pay for resources via API</span>{' '}
-                without registration, emails, OAuth, or complex signatures.
+                </Link>{" "}
+                status code,{" "}
+                <span className="font-bold">
+                  x402 protocol enables users to pay for resources via API
+                </span>{" "}
+                without registration, emails, OAuth, or complex signatures. Algorand support is
+                provided by Algorand Foundation & GoPlausible.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-400">
                 {whatIsItFeatures.map((feature, index) => (
@@ -182,7 +205,7 @@ export default function Home() {
           <div className="relative">
             <div className="flex items-center gap-4 mb-6">
               <h3 className="text-3xl font-bold text-purple-400">
-                Powering Next-Gen Digital Commerce
+                Powering Next-Gen Digital Commerce on all blockchains
               </h3>
             </div>
             <div className="bg-gray-800/30 rounded-2xl p-8  backdrop-blur-xl border border-gray-700/50">
@@ -218,14 +241,15 @@ export default function Home() {
                   <pre className="syntax-highlight">
                     <span className="text-green-400">paymentMiddleware</span>
                     <span className="text-gray-300">(</span>
-                    <span className="text-amber-300">&quot;0xYourAddress&quot;</span>
-                    <span className="text-gray-300">, {'{'}</span>
+                    {/* <span className="text-amber-300">&quot;0xYourAddress&quot;</span> */}
+                    <span className="text-amber-300">&quot;YourAlgorandAddress&quot;</span>
+                    <span className="text-gray-300">, {"{"}</span>
                     <span className="text-amber-300">&quot;/your-endpoint&quot;</span>
                     <span className="text-gray-300">: </span>
                     <span className="text-amber-300">&quot;$0.01&quot;</span>
-                    <span className="text-gray-300">{'}'}</span>
+                    <span className="text-gray-300">{"}"}</span>
                     <span className="text-gray-300">);</span>
-                    {'\n'}
+                    {"\n"}
                     {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                     <span className="text-gray-400">// and thats it!</span>
                   </pre>
@@ -253,7 +277,7 @@ export default function Home() {
             </div>
           </div>
         </Section>
-        
+
         {/* x402 Button Section */}
         <div className="relative z-10 text-center py-12">
           <Image
@@ -261,28 +285,29 @@ export default function Home() {
             alt="x402 button"
             width={320}
             height={160}
-            className="mx-auto"
+            className="bg-white mx-auto"
+            style={{ borderRadius: 10 }}
           />
         </div>
       </div>
       <footer className="relative z-10 py-8 text-center text-sm text-gray-400">
-        By using this site, you agree to be bound by the{' '}
+        By using this site, you agree to be bound by the GoPlausible's{" "}
         <a
-          href="https://www.coinbase.com/legal/developer-platform/terms-of-service"
+          href="https://goplausible.com/terms"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500"
         >
-          CDP Terms of Service
-        </a>{' '}
-        and{' '}
+          Terms of Service
+        </a>{" "}
+        and{" "}
         <a
-          href="https://www.coinbase.com/legal/privacy"
+          href="https://goplausible.com/privacy"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500"
         >
-          Global Privacy Policy
+          Privacy Policy
         </a>
         .
       </footer>

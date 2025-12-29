@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { type Partner, type CategoryInfo } from './data'; // Partner and CategoryInfo types
-import PartnerCard from './partner-card';
-import { BackgroundVideo } from '../components/BackgroundVideo'; // Adjusted import path
+import { useState, useMemo } from "react";
+import { type Partner, type CategoryInfo } from "./data"; // Partner and CategoryInfo types
+import PartnerCard from "./partner-card";
+import { BackgroundVideo } from "../components/BackgroundVideo"; // Adjusted import path
 
 interface EcosystemClientProps {
   initialPartners: Partner[];
@@ -17,24 +17,28 @@ export default function EcosystemClient({ initialPartners, categories }: Ecosyst
     if (!selectedCategory) {
       return initialPartners;
     }
-    return initialPartners.filter((partner) => {
+    return initialPartners.filter(partner => {
       // The category in metadata.json is the category *name*. We need to find its ID for comparison.
       const partnerCategoryInfo = categories.find(cat => cat.name === partner.category);
       return partnerCategoryInfo?.id === selectedCategory;
     });
   }, [selectedCategory, initialPartners, categories]);
 
-  const mainCategoriesFilter = useMemo(() => [
-    { id: null, name: 'All Projects' },
-    ...categories.map(c => ({ id: c.id, name: c.name }))
-  ], [categories]);
+  const mainCategoriesFilter = useMemo(
+    () => [
+      { id: null, name: "All Projects" },
+      ...categories.map(c => ({ id: c.id, name: c.name })),
+    ],
+    [categories],
+  );
 
   return (
     <>
       {/* Video Background */}
       <div className="fixed w-full z-0">
-        <div className="fixed w-full bg-gradient-to-t from-black" /> {/* Optional: overlay for video */}
-        <BackgroundVideo src="/neonblobs.mp4" />
+        <div className="fixed w-full bg-gradient-to-t from-black" />{" "}
+        {/* Optional: overlay for video */}
+        <BackgroundVideo src="/banner.mp4" />
       </div>
 
       <div className="relative z-10">
@@ -44,22 +48,25 @@ export default function EcosystemClient({ initialPartners, categories }: Ecosyst
               Explore the <span className="text-blue-400">x402 Ecosystem</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto font-mono">
-              Discover innovative projects, tools, and applications built by our growing community of partners and developers leveraging x402 technology.
+              Discover innovative projects, tools, and applications built by our growing community
+              of partners and developers leveraging x402 technology.
             </p>
           </section>
 
           <section className="mb-10 md:mb-12">
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              {mainCategoriesFilter.map((category) => (
+              {mainCategoriesFilter.map(category => (
                 <button
-                  key={category.id || 'all'}
+                  key={category.id || "all"}
                   onClick={() => setSelectedCategory(category.id)}
                   className={`
                     px-6 py-3 rounded-lg text-sm font-mono transition-all duration-200 ease-in-out 
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
-                    ${selectedCategory === category.id || (selectedCategory === null && category.id === null)
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-700/[.5] text-gray-300 hover:bg-blue-700/[.4] hover:text-white'
+                    ${
+                      selectedCategory === category.id ||
+                      (selectedCategory === null && category.id === null)
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-gray-700/[.5] text-gray-300 hover:bg-blue-700/[.4] hover:text-white"
                     }
                   `}
                 >
@@ -72,14 +79,16 @@ export default function EcosystemClient({ initialPartners, categories }: Ecosyst
           <section>
             {filteredPartners.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {filteredPartners.map((partner) => (
+                {filteredPartners.map(partner => (
                   // Ensure partner has a unique slug or name for the key if names can repeat
                   <PartnerCard key={partner.slug || partner.name} partner={partner} />
                 ))}
               </div>
             ) : (
               <div className="text-center py-10">
-                <p className="text-xl text-gray-500">No partners found for this category or matching your filter.</p>
+                <p className="text-xl text-gray-500">
+                  No partners found for this category or matching your filter.
+                </p>
               </div>
             )}
           </section>
@@ -87,4 +96,4 @@ export default function EcosystemClient({ initialPartners, categories }: Ecosyst
       </div>
     </>
   );
-} 
+}
