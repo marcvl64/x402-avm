@@ -45,11 +45,11 @@ export default function EcosystemClient({ initialPartners, categories }: Ecosyst
         <main className="max-w-6xl mx-auto px-4 py-12 md:py-20 lg:px-12">
           <section className="text-center mb-12 md:mb-16">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 font-mono">
-              Explore the <span className="text-blue-400">x402 Ecosystem</span>
+              Explore the Algorand <span className="text-blue-400">x402 Ecosystem</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto font-mono">
-              Discover innovative projects, tools, and applications built by our growing community
-              of partners and developers leveraging x402 technology.
+              Discover innovative projects, tools, and applications built by Algorand growing
+              community of partners and developers leveraging x402 technology.
             </p>
           </section>
 

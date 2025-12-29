@@ -154,7 +154,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/ecosystem"
-                target="_blank"
+                target="_self"
                 rel="noopener noreferrer"
                 className="px-4 py-3 border-2 border-transparent hover:border-blue-600 rounded-lg font-mono transition-colors flex items-center gap-2 text-sm"
               >
