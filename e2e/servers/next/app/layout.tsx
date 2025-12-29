@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'x402.org',
+  title: 'Algorand X402',
   description: 'A chain-agnostic protocol for web payments',
 };
 
