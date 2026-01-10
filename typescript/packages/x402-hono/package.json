@@ -1,5 +1,5 @@
 {
-  "name": "x402-hono-avm",
+  "name": "x402-avm-hono",
   "version": "0.6.1-avm.2",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
