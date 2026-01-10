@@ -1,1 +1,1 @@
-export { POST } from "x402-next-avm";
+export { POST } from "x402-avm-next";

@@ -1,4 +1,4 @@
-# x402-next-avm
+# x402-avm-next
 
 IMPORTANT: This package is temporary and works until the [x402 Algorand specification](https://github.com/coinbase/x402/pull/361) and following implementation PR are reviewed and merged by Coinbase. Until then, this package contains X402 core protocol plus support for Algorand-specific types and utilities.
 
@@ -7,7 +7,7 @@ Next.js middleware integration for the x402 Payment Protocol. This package allow
 ## Installation
 
 ```bash
-npm install x402-next-avm
+npm install x402-avm-next
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install x402-next-avm
 Create a middleware file in your Next.js project (e.g., `middleware.ts`):
 
 ```typescript
-import { paymentMiddleware, Network } from "x402-next-avm";
+import { paymentMiddleware, Network } from "x402-avm-next";
 
 export const middleware = paymentMiddleware("0xYourAddress", {
   "/protected": {
@@ -125,7 +125,7 @@ export default nextConfig;
 
 ```ts
 // middleware.ts
-import { paymentMiddleware } from "x402-next-avm";
+import { paymentMiddleware } from "x402-avm-next";
 import { facilitator } from "@coinbase/x402";
 
 export const middleware = paymentMiddleware(
@@ -153,7 +153,7 @@ export const config = {
 {
   "dependencies": {
     "next": "canary", // TEMPORARY: Only needed until Edge runtime support is added
-    "x402-next-avm": "^1.0.0",
+    "x402-avm-next": "^1.0.0",
     "@coinbase/x402": "^1.0.0"
     // other dependencies
   }
@@ -198,7 +198,7 @@ Create an API route that matches the path you configured above:
 
 ```typescript
 // app/api/x402/session-token/route.ts
-export { POST } from "x402-next-avm";
+export { POST } from "x402-avm-next";
 ```
 
 That's it! The `x402-next` package provides the complete session token implementation.
@@ -251,7 +251,7 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 3. **API route not found**
    - Ensure you've created your session token API route at the path you configured
    - Check that your API route path matches your `sessionTokenEndpoint` configuration
-   - Verify the export: `export { POST } from "x402-next-avm";`
+   - Verify the export: `export { POST } from "x402-avm-next";`
    - Example: If you configured `sessionTokenEndpoint: "/api/custom/onramp"`, create `app/api/custom/onramp/route.ts`
 
 ## Resources

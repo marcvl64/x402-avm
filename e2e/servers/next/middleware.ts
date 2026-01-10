@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { paymentMiddleware, Network, Resource } from "x402-next-avm";
+import { paymentMiddleware, Network, Resource } from "x402-avm-next";
 import { facilitator } from "@coinbase/x402";
 
 const useCdpFacilitator = process.env.USE_CDP_FACILITATOR === 'true';

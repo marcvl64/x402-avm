@@ -23,11 +23,11 @@ The x402 package provides the core building blocks for implementing the x402 Pay
 
 This core package is used by the following integration packages:
 
-- `x402-express-avm`: Express.js middleware
-- `x402-hono-avm`: Hono middleware
-- `x402-next-avm`: Next.js middleware
-- `x402-fetch-avm`: Fetch API wrapper
-- `x402-axios-avm`: Axios interceptor
+- `x402-avm-express`: Express.js middleware
+- `x402-avm-hono`: Hono middleware
+- `x402-avm-next`: Next.js middleware
+- `x402-avm-fetch`: Fetch API wrapper
+- `x402-avm-axios`: Axios interceptor
 
 ## Manual Server Integration
 
@@ -42,7 +42,7 @@ For a complete example implementation, see our [advanced server example](https:/
 
 ## Manual Client Integration
 
-If you're not using our `x402-fetch-avm` or `x402-axios-avm` packages, you can manually integrate the x402 protocol in your client application. Here's how:
+If you're not using our `x402-avm-fetch` or `x402-avm-axios` packages, you can manually integrate the x402 protocol in your client application. Here's how:
 
 1. Make a request to a x402-protected endpoint. The server will respond with a 402 status code and a JSON object containing:
 

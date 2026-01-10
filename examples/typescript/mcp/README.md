@@ -69,7 +69,7 @@ import axios from "axios";
 import { createWalletClient, Hex, http, publicActions } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { withPaymentInterceptor } from "x402-axios-avm";
+import { withPaymentInterceptor } from "x402-avm-axios";
 
 // Create wallet client
 const wallet = createWalletClient({

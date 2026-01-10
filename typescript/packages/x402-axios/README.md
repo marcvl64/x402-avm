@@ -1,4 +1,4 @@
-# x402-axios-avm
+# x402-avm-axios
 
 IMPORTANT: This package is temporary and works until the [x402 Algorand specification](https://github.com/coinbase/x402/pull/361) and following implementation PR are reviewed and merged by Coinbase. Until then, this package contains X402 core protocol plus support for Algorand-specific types and utilities.
 
@@ -7,7 +7,7 @@ A utility package that extends Axios to automatically handle 402 Payment Require
 ## Installation
 
 ```bash
-npm install x402-axios-avm
+npm install x402-avm-axios
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ npm install x402-axios-avm
 ```typescript
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { withPaymentInterceptor } from "x402-axios-avm;
+import { withPaymentInterceptor } from "x402-avm-axios;
 import axios from "axios";
 import { baseSepolia } from "viem/chains";
 
@@ -45,7 +45,7 @@ console.log(response.data);
 Provide any object that implements the Algorand signer interface (`address` plus `signTransactions`) and the interceptor will automatically target Algorand (or Algorand Testnet) payment requirements when they are offered.
 
 ```typescript
-import { withPaymentInterceptor } from "x402-axios-avm";
+import { withPaymentInterceptor } from "x402-avm-axios";
 
 const algorandWallet = {
   address: account.address,

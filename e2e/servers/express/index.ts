@@ -1,5 +1,5 @@
 import express from "express";
-import { Network, paymentMiddleware, SolanaAddress } from "x402-express-avm";
+import { Network, paymentMiddleware, SolanaAddress } from "x402-avm-express";
 import { facilitator } from "@coinbase/x402";
 import dotenv from "dotenv";
 

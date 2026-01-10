@@ -11,7 +11,7 @@ import axios from "axios";
 import { config } from "dotenv";
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { withPaymentInterceptor } from "x402-axios-avm";
+import { withPaymentInterceptor } from "x402-avm-axios";
 
 config();
 

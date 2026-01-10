@@ -35,7 +35,7 @@
     "@langchain/openai": "^0.5.2",
     "dotenv": "^16.4.7",
     "viem": "^2.26.2",
-    "x402-fetch-avm": "workspace:*",
+    "x402-avm-fetch": "workspace:*",
     "zod": "^3.24.2"
   },
   "type": "module",

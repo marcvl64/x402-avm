@@ -5,7 +5,7 @@ import {
   createSigner,
   type Hex,
   type MultiNetworkSigner,
-} from "x402-fetch-avm";
+} from "x402-avm-fetch";
 
 config();
 

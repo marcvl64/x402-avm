@@ -1,4 +1,4 @@
-import { paymentMiddleware, Resource, Network, Price } from "x402-next-avm";
+import { paymentMiddleware, Resource, Network, Price } from "x402-avm-next";
 import { NextRequest, NextResponse } from "next/server";
 import { AlgodClientOptions, createAlgorandClient } from "x402-avm/shared/avm";
 

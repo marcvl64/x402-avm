@@ -24,7 +24,7 @@
     "wagmi": "^2.15.6",
     "x402-avm": "workspace:*",
     "x402-legacy": "npm:x402@0.1.2",
-    "x402-next-avm": "workspace:*",
+    "x402-avm-next": "workspace:*",
     "crypto-browserify": "^3.12.1",
     "stream-browserify": "^3.0.0",
     "assert": "^2.0.0",

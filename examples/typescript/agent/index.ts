@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { config } from "dotenv";
 import { Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { wrapFetchWithPayment } from "x402-fetch-avm";
+import { wrapFetchWithPayment } from "x402-avm-fetch";
 
 config();
 

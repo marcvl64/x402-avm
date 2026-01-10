@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { decodeXPaymentResponse, wrapFetchWithPayment, createSigner, type Hex } from "x402-fetch-avm";
+import { decodeXPaymentResponse, wrapFetchWithPayment, createSigner, type Hex } from "x402-avm-fetch";
 
 config();
 

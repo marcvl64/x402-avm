@@ -171,7 +171,7 @@ export const middleware = paymentMiddleware(
 The frontend uses `x402-fetch` to automatically handle payments when calling protected endpoints:
 
 ```typescript
-import { wrapFetchWithPayment } from "x402-fetch-avm";
+import { wrapFetchWithPayment } from "x402-avm-fetch";
 
 const fetchWithPayment = wrapFetchWithPayment(fetch, walletClient);
 const response = await fetchWithPayment("/api/protected");

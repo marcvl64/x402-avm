@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "x402-fetch-avm": "workspace:*"
+    "x402-avm-fetch": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

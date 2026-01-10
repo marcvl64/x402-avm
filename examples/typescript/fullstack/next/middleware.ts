@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { paymentMiddleware, Network, Resource } from "x402-next-avm";
+import { paymentMiddleware, Network, Resource } from "x402-avm-next";
 
 const facilitatorUrl = process.env.NEXT_PUBLIC_FACILITATOR_URL as Resource;
 const payTo = process.env.RESOURCE_WALLET_ADDRESS as Address;

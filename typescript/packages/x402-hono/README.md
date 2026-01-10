@@ -1,4 +1,4 @@
-# x402-hono-avm
+# x402-avm-hono
 
 IMPORTANT: This package is temporary and works until the [x402 Algorand specification](https://github.com/coinbase/x402/pull/361) and following implementation PR are reviewed and merged by Coinbase. Until then, this package contains X402 core protocol plus support for Algorand-specific types and utilities.
 
@@ -7,14 +7,14 @@ Hono middleware integration for the x402 Payment Protocol. This package allows y
 ## Installation
 
 ```bash
-npm install x402-hono-avm
+npm install x402-avm-hono
 ```
 
 ## Quick Start
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddleware, Network } from "x402-hono-avm";
+import { paymentMiddleware, Network } from "x402-avm-hono";
 
 const app = new Hono();
 
@@ -138,7 +138,7 @@ Add a session token endpoint to your Hono app:
 
 ```typescript
 import { Hono } from "hono";
-import { POST } from "x402-hono-avm/session-token";
+import { POST } from "x402-avm-hono/session-token";
 
 const app = new Hono();
 
@@ -208,7 +208,7 @@ Once set up, your x402 paywall will automatically show a "Get more USDC" button 
 3. **API route not found**
    - Ensure you've added the session token route: `app.post("/your-path", POST)`
    - Check that your route path matches your `sessionTokenEndpoint` configuration
-   - Verify the import: `import { POST } from "x402-hono-avm/session-token"`
+   - Verify the import: `import { POST } from "x402-avm-hono/session-token"`
    - Example: If you configured `sessionTokenEndpoint: "/api/custom/onramp"`, add `app.post("/api/custom/onramp", POST)`
 
 ## Resources

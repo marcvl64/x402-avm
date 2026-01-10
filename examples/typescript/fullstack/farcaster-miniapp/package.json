@@ -24,8 +24,8 @@
     "react-hot-toast": "^2.5.2",
     "viem": "^2.27.2",
     "wagmi": "^2.14.11",
-    "x402-fetch-avm": "^0.4.1",
-    "x402-next-avm": "workspace:*"
+    "x402-avm-fetch": "^0.4.1",
+    "x402-avm-next": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",
