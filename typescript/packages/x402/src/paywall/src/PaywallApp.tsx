@@ -609,6 +609,18 @@ function AvmPaywall({ config, paymentRequirements }: PaywallProps): JSX.Element 
         </p>
         {paymentRequirements.network === "algorand-testnet" && (
           <p className="instructions">
+            Need Algorand Testnet Algos?{" "}
+            <a
+              href="https://bank.testnet.algorand.network"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Request them <u>here</u>.
+            </a>
+          </p>
+        )}
+        {paymentRequirements.network === "algorand-testnet" && (
+          <p className="instructions">
             Need Algorand Testnet USDC funds?{" "}
             <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">
               Request them <u>here</u>.
