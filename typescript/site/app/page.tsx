@@ -113,7 +113,7 @@ export default function Home() {
             </div>
 
             <p className="text-xl text-gray-400 mb-8 font-mono">
-              X402 internet-native protocol for Algorand Blockchain
+              x402 internet-native protocol for Algorand Blockchain
             </p>
             <div className="flex flex-wrap gap-4 mb-6 justify-center">
               <Link
@@ -170,7 +170,7 @@ export default function Home() {
           <div className="relative">
             <div className="flex items-center justify-center gap-4 mb-6">
               <h3 className="text-3xl font-bold text-blue-400 text-center">
-                The best way to accept digital payments on Algorand.
+                The best way to accept digital payments on Web 3.0
               </h3>
             </div>
             <div className="bg-gray-800/30 rounded-2xl p-8 backdrop-blur-2xl border border-gray-700/50">
@@ -203,12 +203,12 @@ export default function Home() {
         <Section>
           {/* Why it matters */}
           <div className="relative">
-            <div className="flex items-center gap-4 mb-6">
-              <h3 className="text-3xl font-bold text-purple-400">
-                Powering Next-Gen Digital Commerce on all blockchains
-              </h3>
-            </div>
             <div className="bg-gray-800/30 rounded-2xl p-8  backdrop-blur-xl border border-gray-700/50">
+              <div className="flex items-center gap-4 mb-6">
+                <h3 className="text-3xl font-bold text-indigo-400">
+                  Powering Next-Gen Digital Commerce on Algorand and other blockchains
+                </h3>
+              </div>
               <p className="text-gray-300 leading-relaxed text-xl mb-8">
                 <span className="font-bold">x402 unlocks new monetization models,</span> offering
                 developers and content creators a frictionless way to earn revenue from small
@@ -225,39 +225,22 @@ export default function Home() {
 
         <Section>
           {/* How it works */}
+
           <div className="relative">
-            <div className="flex items-center gap-4 mb-6">
-              <h3 className="text-3xl font-bold text-indigo-400">
-                1 Line of Code to Accept Digital Dollars
-              </h3>
-            </div>
             <div className="bg-gray-800/30 rounded-2xl p-8 backdrop-blur-xl border border-gray-700/50">
-              <p className="text-gray-300 leading-relaxed text-xl mb-8">
-                Just add a <span className="font-bold">single line of code</span> in your app, and
-                you can require a USDC payment for each incoming request.
-              </p>
-              <div className="mb-8">
-                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
-                  <pre className="syntax-highlight">
-                    <span className="text-green-400">paymentMiddleware</span>
-                    <span className="text-gray-300">(</span>
-                    {/* <span className="text-amber-300">&quot;0xYourAddress&quot;</span> */}
-                    <span className="text-amber-300">&quot;YourAlgorandAddress&quot;</span>
-                    <span className="text-gray-300">, {"{"}</span>
-                    <span className="text-amber-300">&quot;/your-endpoint&quot;</span>
-                    <span className="text-gray-300">: </span>
-                    <span className="text-amber-300">&quot;$0.01&quot;</span>
-                    <span className="text-gray-300">{"}"}</span>
-                    <span className="text-gray-300">);</span>
-                    {"\n"}
-                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
-                    <span className="text-gray-400">// and thats it!</span>
-                  </pre>
-                </div>
+              <div className="flex items-center gap-4 mb-6">
+                <h3 className="text-3xl font-bold text-indigo-400">The x402 flow:</h3>
               </div>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                x402 allows any web developer to accept crypto payments without the complexity of
+                having to interact with the blockchain.
+              </p>
+              <br />
+
               <p className="text-gray-300 leading-relaxed text-lg mb-8">
-                If a request arrives without payment, the server responds with HTTP 402, prompting
-                the client to pay and retry.
+                For a payment requiring endpoint or resource (URL) if a request arrives without
+                payment, the server responds with HTTP 402, prompting the client that payment is
+                required, accompanied by payment requirements information.
               </p>
               <div className="mb-8">
                 <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
@@ -269,11 +252,279 @@ export default function Home() {
                   </pre>
                 </div>
               </div>
-
-              <p className="text-gray-300 leading-relaxed text-lg">
-                x402 allows any web developer to accept crypto payments without the complexity of
-                having to interact with the blockchain.
+              <p className="text-gray-300 leading-relaxed text-lg mb-8">
+                Then client generates and sends a payment transaction to the specified address with
+                the required amount on the Algorand blockchain and sends it in a pyement group to
+                server.
               </p>
+              <p className="text-gray-300 leading-relaxed text-lg mb-8">
+                Server then sends the payment group to a facilitator to verify the payment and then
+                settle it on Algorand blockchain and signals back the server with results.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-lg mb-8">
+                Finally server validates the payment results and if successful serves the original
+                request with a 200 OK response along with the requested resource.
+              </p>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-purple-400">HTTP</span>
+                    <span className="text-gray-300">/1.1 </span>
+                    <span className="text-amber-300">200</span>
+                    <span className="text-gray-300"> OK</span>
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+        <Section>
+          {/* Packages and links */}
+          <div className="relative">
+            <div className="bg-gray-800/30 rounded-2xl p-8 backdrop-blur-xl border border-gray-700/50">
+              <div className="flex items-center gap-4 mb-6">
+                <h3 className="text-3xl font-bold text-indigo-400">x402 Algorand Resources</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed text-xl mb-6">
+                x402 Algorand PR, Spec and Repository:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-guide/scheme_exact_avm.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402 Algorand Exact Spec
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://github.com/coinbase/x402/pull/361"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402 Algorand PR
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://github.com/GoPlausible/.github/blob/main/profile/algorand-x402-guide/README.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402 Algorand Guides, Examples and docs
+                  </a>
+                </div>
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://github.com/GoPlausible/x402-avm/tree/branch-pr-361"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402 Algorand Implementation Repository
+                  </a>
+                </div>
+              </div>
+              <br />
+              <p className="text-gray-300 leading-relaxed text-xl mb-6">
+                x402 Algorand NPM Packages:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402 Core Package
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm-express"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402-express Package
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm-hono"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402-hono Package
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm-next"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402-next Package
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm-fetch"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402-fetch Package
+                  </a>
+                </div>
+
+                <div className="bg-black/50 rounded-lg p-4">
+                  <a
+                    href="https://www.npmjs.com/package/x402-avm-axios"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 font-bold block mb-2"
+                  >
+                    x402-axios Package
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+        <Section>
+          {/* Algorand x402 packages */}
+          <div className="relative">
+            <div className="bg-gray-800/30 rounded-2xl p-8 backdrop-blur-xl border border-gray-700/50">
+              <div className="flex items-center gap-4 mb-6">
+                <h3 className="text-3xl font-bold text-indigo-400">
+                  x402 Algorand packages make integration easy for developers
+                </h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed text-xl mb-8">
+                x402 protocol comes with exact specifications for each blockchain virtual machine
+                type, <span className="font-bold">EVM, AVM, SVM and ..., </span> as well as a core
+                implementation x402 package to serve those specifications implementations core
+                requirements, methods and functionalities.
+              </p>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // The x402-avm package is temporarily used untill the Algorand
+                      {"\n"}
+                      implementationa and exact spec gets merged into @coinbase/x402 repository!
+                      {"\n"}
+                      After merger developers can simply npm install @coinbase/x402
+                    </span>
+                  </pre>
+                </div>
+              </div>
+              <p className="text-gray-300 leading-relaxed text-xl mb-8">
+                Built atop x402 core package, x402 integration has been made easy using npm packages
+                built for different, most existing backend & frontend libraries and frameworks,
+                including: commonly used,{" "}
+                <span className="font-bold">ExpressJS, Hono, NextJS, Fetch and Axios</span>.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-xl mb-8">
+                {" "}
+                <span className="font-bold">Backends and SSR:</span>
+              </p>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm-express</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // This install the x402 middleware for ExpressJS!
+                    </span>
+                  </pre>
+                </div>
+              </div>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm-hono</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // This install the x402 middleware for Hono which can be used in serverless
+                      {"\n"}
+                      runtimes like Cloudflare workers and Deno environments!
+                    </span>
+                  </pre>
+                </div>
+              </div>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm-next</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // This install the x402 middleware for NextJS SSR environments.
+                    </span>
+                  </pre>
+                </div>
+              </div>
+              <p className="text-gray-300 leading-relaxed text-xl mb-8">
+                {" "}
+                <span className="font-bold">Frontends and clients:</span>
+              </p>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm-fetch</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // This install the x402 utilities to be used in global Fetch web APIs!
+                      {"\n"}
+                      usable in browsers and client side runtimes!
+                    </span>
+                  </pre>
+                </div>
+              </div>
+              <div className="mb-8">
+                <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-gray-300 relative overflow-hidden">
+                  <pre className="syntax-highlight">
+                    <span className="text-green-400">npm install x402-avm-axios</span>
+
+                    {"\n"}
+                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    <span className="text-gray-400">
+                      // This install the x402 utilities to be used with Axios library,
+                      {"\n"}
+                      usable in browsers and client side runtimes!
+                    </span>
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </Section>
