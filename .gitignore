@@ -9,6 +9,7 @@ __pycache__/
 **/.DS_Store
 *memo*
 *memo*/*
+*memo/
 typescript/package-lock.json
 .vscode/*
 /.vscode
