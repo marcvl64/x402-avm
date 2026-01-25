@@ -10,3 +10,6 @@ __pycache__/
 e2e/facilitators/external-proxies
 *.d.ts
 examples/go
+**memo*/*
+**memo*/
+**launch.json
