@@ -72,9 +72,19 @@ export const config: Record<string, ChainConfig> = {
     usdcAddress: "0x2e08028E3C4c2356572E096d8EF835cD5C6030bD",
     usdcName: "Bridged USDC (SKALE Bridge)",
   },
+  // algorand testnet
+  "416001": {
+    usdcAddress: "10458941",
+    usdcName: "USDC",
+  },
+  // algorand mainnet
+  "416002": {
+    usdcAddress: "31566704",
+    usdcName: "USDC",
+  },
 };
 
 export type ChainConfig = {
-  usdcAddress: Address | SolanaAddress;
+  usdcAddress: Address | SolanaAddress | string;
   usdcName: string;
 };

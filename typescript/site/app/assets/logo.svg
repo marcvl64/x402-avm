@@ -1,0 +1,42 @@
+<svg id="master-artboard" viewBox="0 0 1135 1135" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect id="ee-background" x="0" y="0" width="1135" height="1135"
+    style="fill: white; fill-opacity: 0; pointer-events: none;" transform="matrix(1, 0, 0, 1, 0, 1.0000000000000002)" />
+  <defs>
+    <linearGradient id="gradient-0" gradientUnits="userSpaceOnUse" x1="804.2249145507812" y1="159.92587280273438"
+      x2="804.2249755859375" y2="908.0953369140625"
+      gradientTransform="matrix(0.60072280061277, -0.7994578385943664, 1.2020377111344742, 0.9032260054613053, -290.14756640361185, 766.8384724578877)">
+      <stop offset="0" style="stop-color: #76f935" />
+      <stop offset="1" style="stop-color: #45c206" />
+    </linearGradient>
+    <linearGradient id="gradient-1" gradientUnits="userSpaceOnUse" x1="773.2629699707031" y1="330.58538818359375"
+      x2="773.2629699707031" y2="918.705078125"
+      gradientTransform="matrix(0.10462499929369246, -0.9945123981425512, 1.8682503075872658, 0.19654400582023357, -667.0744871869551, 1509.6989477277157)">
+      <stop offset="0" style="stop-color: #76f935" />
+      <stop offset="1" style="stop-color: #45c206" />
+    </linearGradient>
+    <linearGradient id="gradient-2" gradientUnits="objectBoundingBox" x1="0.5" y1="0" x2="0.5" y2="1"
+      gradientTransform="matrix(0.6914531742461101, -0.6574152039559564, 0.9620670710594634, 0.837967762295448, -0.05537096348737336, 0.48943315138828414)">
+      <stop offset="0" style="stop-color: #6ee831" />
+      <stop offset="1" style="stop-color: #42a112" />
+    </linearGradient>
+    <linearGradient id="gradient-3" gradientUnits="objectBoundingBox" x1="0.5" y1="0" x2="0.5" y2="1"
+      gradientTransform="matrix(0.24291113316489543, -0.9616680115615139, 1.3028772659075312, 0.3234364578505282, -0.496747357155753, 1.1573977397749626)">
+      <stop offset="0" style="stop-color: #6ee831" />
+      <stop offset="1" style="stop-color: #42a112" />
+    </linearGradient>
+  </defs>
+  <path
+    d="M 634.1720581054688 171.80577087402344 L 206.10215759277344 919.9752807617188 L 886.9490966796875 918.7050170898438 L 726.8992919921875 645.6040649414062 L 616.388671875 842.4908447265625 L 344.5579833984375 842.4908447265625 L 684.9814453125 251.83065795898438 L 634.1720581054688 171.80577087402344 Z"
+    style="fill: url('#gradient-2'); fill-opacity: 1; stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; paint-order: fill;"
+    transform="matrix(1.1719518899917603, 0, 0, 1.1719518899917603, -185.43684061260433, -75.94354929763273)" />
+  <path
+    d="M 731.980224609375 330.58538818359375 L 481.7435607910156 767.546875 L 571.9303588867188 766.276611328125 L 729.4398193359375 493.1756896972656 L 979.6763916015625 918.705078125 L 1064.7823486328125 918.7050170898438 L 731.980224609375 330.58538818359375 Z"
+    style="fill: url('#gradient-3'); fill-opacity: 1; stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 0; paint-order: stroke;"
+    transform="matrix(1.1719518899917603, 0, 0, 1.1719518899917603, -185.43684061260433, -75.94354929763273)" />
+  <path d="M 416.96148681640625 279.7759094238281"
+    style="fill: rgb(51, 51, 51); fill-opacity: 1; stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 1; paint-order: stroke;"
+    transform="matrix(1, 0, 0, 1, -1.82598876953125, 25.642898559570312)" />
+  <path d="M 639.2529296875 201.02120971679688"
+    style="fill: rgb(51, 51, 51); fill-opacity: 1; stroke: rgb(0, 0, 0); stroke-opacity: 1; stroke-width: 1; paint-order: fill;"
+    transform="matrix(1, 0, 0, 1, -1.82598876953125, 25.642898559570312)" />
+</svg>

@@ -10,12 +10,15 @@ import {
 } from "x402/shared";
 import { getPaywallHtml } from "x402/paywall";
 import {
+  ASAAmount,
   moneySchema,
   PaymentPayload,
   PaymentRequirements,
   Resource,
   PaywallConfig,
   ERC20TokenAmount,
+  SPLTokenAmount,
+  SupportedAVMNetworks,
   SupportedEVMNetworks,
   SupportedSVMNetworks,
   Network,
@@ -40,7 +43,7 @@ import { safeBase64Encode } from "x402/shared";
  * @returns Promise resolving to an array of payment requirements
  */
 export async function buildPaymentRequirements(
-  payTo: Address | SolanaAddress,
+  payTo: Address | SolanaAddress | string,
   price: Price,
   network: Network,
   config: PaymentMiddlewareConfig,
@@ -103,6 +106,8 @@ export async function buildPaymentRequirements(
     }
 
     // build the payment requirements for svm
+    const splAsset = asset as SPLTokenAmount["asset"];
+
     paymentRequirements.push({
       scheme: "exact",
       network,
@@ -112,7 +117,7 @@ export async function buildPaymentRequirements(
       mimeType: mimeType ?? "",
       payTo: payTo,
       maxTimeoutSeconds: maxTimeoutSeconds ?? 60,
-      asset: asset.address,
+      asset: splAsset.address,
       outputSchema: {
         input: {
           type: "http",
@@ -124,6 +129,45 @@ export async function buildPaymentRequirements(
       },
       extra: {
         feePayer,
+      },
+    });
+  }
+  // avm networks
+  else if (SupportedAVMNetworks.includes(network)) {
+    const paymentKinds = await supported();
+
+    let feePayer: string | undefined;
+    for (const kind of paymentKinds.kinds) {
+      if (kind.network === network && kind.scheme === "exact") {
+        feePayer = kind?.extra?.feePayer;
+        break;
+      }
+    }
+
+    const asaAsset = asset as ASAAmount["asset"];
+
+    paymentRequirements.push({
+      scheme: "exact",
+      network,
+      maxAmountRequired,
+      resource: resourceUrl,
+      description: description ?? "",
+      mimeType: mimeType ?? "application/json",
+      payTo: payTo as string,
+      maxTimeoutSeconds: maxTimeoutSeconds ?? 60,
+      asset: asaAsset.id,
+      outputSchema: {
+        input: {
+          type: "http",
+          method,
+          discoverable: discoverable ?? true,
+          ...inputSchema,
+        },
+        output: outputSchema,
+      },
+      extra: {
+        decimals: asaAsset.decimals,
+        ...(feePayer ? { feePayer } : {}),
       },
     });
   } else {
@@ -180,7 +224,10 @@ export function handleMissingPaymentHeader(
             typeof getPaywallHtml
           >[0]["paymentRequirements"],
           currentUrl: request.url,
-          testnet: network === "base-sepolia",
+          testnet:
+            network === "base-sepolia" ||
+            network === "algorand-testnet" ||
+            network === "solana-devnet",
           cdpClientKey: paywall?.cdpClientKey,
           appLogo: paywall?.appLogo,
           appName: paywall?.appName,
@@ -223,10 +270,16 @@ export async function verifyPayment(
   | { decodedPayment: PaymentPayload; selectedRequirements: PaymentRequirements }
   | { error: NextResponse }
 > {
-  // Decode payment
+  // Decode payment with network-specific decoding
   let decodedPayment: PaymentPayload;
   try {
-    decodedPayment = exact.evm.decodePayment(paymentHeader);
+    // Determine network from first payment requirement for decoding
+    const network = paymentRequirements[0]?.network;
+    if (SupportedAVMNetworks.includes(network)) {
+      decodedPayment = exact.avm.decodePayment(paymentHeader);
+    } else {
+      decodedPayment = exact.evm.decodePayment(paymentHeader);
+    }
     decodedPayment.x402Version = x402Version;
   } catch (error) {
     return {

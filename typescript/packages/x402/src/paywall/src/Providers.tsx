@@ -1,8 +1,9 @@
 import { OnchainKitProvider } from "@coinbase/onchainkit";
+import { WalletProvider } from "@txnlab/use-wallet";
 import type { ReactNode } from "react";
 import { base, baseSepolia } from "viem/chains";
 
-import { choosePaymentRequirement, isEvmNetwork } from "./paywallUtils";
+import { choosePaymentRequirement, isEvmNetwork, isAvmNetwork } from "./paywallUtils";
 import "./window.d.ts";
 
 type ProvidersProps = {
@@ -20,34 +21,41 @@ export function Providers({ children }: ProvidersProps) {
   const { testnet = true, cdpClientKey, appName, appLogo, paymentRequirements } = window.x402;
   const selectedRequirement = choosePaymentRequirement(paymentRequirements, testnet);
 
-  if (!isEvmNetwork(selectedRequirement.network)) {
-    return <>{children}</>;
+  // Handle Algorand networks
+  if (isAvmNetwork(selectedRequirement.network)) {
+    return <WalletProvider value={{}}>{children}</WalletProvider>;
   }
 
-  const chain = selectedRequirement.network === "base-sepolia" ? baseSepolia : base;
+  // Handle EVM networks
+  if (isEvmNetwork(selectedRequirement.network)) {
+    const chain = selectedRequirement.network === "base-sepolia" ? baseSepolia : base;
 
-  return (
-    <OnchainKitProvider
-      apiKey={cdpClientKey || undefined}
-      chain={chain}
-      config={{
-        appearance: {
-          mode: "light",
-          theme: "base",
-          name: appName || undefined,
-          logo: appLogo || undefined,
-        },
-        wallet: {
-          display: "modal",
-          supportedWallets: {
-            rabby: true,
-            trust: true,
-            frame: true,
+    return (
+      <OnchainKitProvider
+        apiKey={cdpClientKey || undefined}
+        chain={chain}
+        config={{
+          appearance: {
+            mode: "light",
+            theme: "base",
+            name: appName || undefined,
+            logo: appLogo || undefined,
           },
-        },
-      }}
-    >
-      {children}
-    </OnchainKitProvider>
-  );
+          wallet: {
+            display: "modal",
+            supportedWallets: {
+              rabby: true,
+              trust: true,
+              frame: true,
+            },
+          },
+        }}
+      >
+        {children}
+      </OnchainKitProvider>
+    );
+  }
+
+  // For SVM and other networks, no provider wrapper needed
+  return <>{children}</>;
 }

@@ -135,7 +135,6 @@ describe("withPaymentInterceptor()", () => {
       mockWalletClient,
       1,
       validPaymentRequirements[0],
-      undefined,
     );
     expect(mockAxiosClient.request).toHaveBeenCalledWith({
       ...error.config,
@@ -351,5 +350,80 @@ describe("withPaymentInterceptor() - SVM and MultiNetwork", () => {
     await handler(error);
 
     expect(selectPaymentRequirements).toHaveBeenCalledWith(expect.any(Array), undefined, "exact");
+  });
+
+  it("supports Algorand signers and forwards Algorand networks", async () => {
+    vi.doMock("x402/types", async () => {
+      const actual = await vi.importActual("x402/types");
+      return {
+        ...actual,
+        isEvmSignerWallet: vi.fn().mockReturnValue(false),
+        isMultiNetworkSigner: vi.fn().mockReturnValue(false),
+        isSvmSignerWallet: vi.fn().mockReturnValue(false),
+        isAvmSignerWallet: vi.fn().mockReturnValue(true),
+      };
+    });
+
+    vi.doMock("x402/client", () => ({
+      createPaymentHeader: vi.fn().mockResolvedValue("payment-header-value"),
+      selectPaymentRequirements: vi.fn((reqs: PaymentRequirements[]) => reqs[0]),
+    }));
+
+    const { withPaymentInterceptor } = await import("./index");
+    const { selectPaymentRequirements } = await import("x402/client");
+
+    const mockAxiosClient: AxiosInstance = {
+      interceptors: { response: { use: vi.fn() } },
+      request: vi.fn().mockResolvedValue({ data: "success" } as AxiosResponse),
+    } as unknown as AxiosInstance;
+
+    const algorandWallet = {
+      address: "VSOOXO3JHY7SZ5K4YVAK2MCW6N6SY7JYLLNP7EZ4OQMZT6HKXAF3GEEEQA",
+      signTransactions: vi.fn(),
+    } as unknown as Signer;
+
+    const algorandRequirements: PaymentRequirements[] = [
+      {
+        scheme: "exact",
+        network: "algorand-testnet",
+        maxAmountRequired: "1000",
+        resource: "https://api.example.com/resource",
+        description: "Algorand payment",
+        mimeType: "application/json",
+        payTo: "VSOOXO3JHY7SZ5K4YVAK2MCW6N6SY7JYLLNP7EZ4OQMZT6HKXAF3GEEEQA",
+        maxTimeoutSeconds: 120,
+        asset: "0",
+        extra: {
+          decimals: 6,
+          feePayer: "FTZPNC5WAZY6P3QJ67JX6L5YSLG4CX67UJH6RY5QXNI2OBOFUZH3H4I6TY",
+        },
+      },
+    ];
+
+    withPaymentInterceptor(mockAxiosClient, algorandWallet);
+    const handler = (mockAxiosClient.interceptors.response.use as ReturnType<typeof vi.fn>).mock
+      .calls.at(-1)![1];
+
+    const error = new AxiosError(
+      "Error",
+      "ERROR",
+      { headers: new AxiosHeaders() } as InternalAxiosRequestConfig,
+      {},
+      {
+        status: 402,
+        statusText: "Payment Required",
+        data: { accepts: algorandRequirements, x402Version: 1 },
+        headers: {},
+        config: { headers: new AxiosHeaders() } as InternalAxiosRequestConfig,
+      },
+    );
+
+    await handler(error);
+
+    expect(selectPaymentRequirements).toHaveBeenCalledWith(
+      expect.any(Array),
+      ["algorand-mainnet", "algorand-testnet"],
+      "exact",
+    );
   });
 });

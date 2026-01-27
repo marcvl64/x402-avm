@@ -77,7 +77,7 @@ import {
  * ```
  */
 export function paymentMiddleware(
-  payTo: Address | SolanaAddress,
+  payTo: Address | SolanaAddress | string,
   routes: RoutesConfig,
   facilitator?: FacilitatorConfig,
   paywall?: PaywallConfig,
@@ -240,7 +240,7 @@ export function paymentMiddleware(
  */
 export function withX402<T = unknown>(
   handler: (request: NextRequest) => Promise<NextResponse<T>>,
-  payTo: Address | SolanaAddress,
+  payTo: Address | SolanaAddress | string,
   routeConfig: RouteConfig | ((req: NextRequest) => Promise<RouteConfig>),
   facilitator?: FacilitatorConfig,
   paywall?: PaywallConfig,
@@ -330,6 +330,7 @@ export type {
   Resource,
   RouteConfig,
   RoutesConfig,
+  Price,
 } from "x402/types";
 export type { Address as SolanaAddress } from "@solana/kit";
 

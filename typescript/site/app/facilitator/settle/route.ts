@@ -5,6 +5,7 @@ import {
   PaymentRequirements,
   PaymentRequirementsSchema,
   SettleResponse,
+  SupportedAVMNetworks,
   SupportedEVMNetworks,
   SupportedSVMNetworks,
   createSigner,
@@ -48,7 +49,9 @@ export async function POST(req: Request) {
     ? process.env.PRIVATE_KEY
     : SupportedSVMNetworks.includes(network)
       ? process.env.SOLANA_PRIVATE_KEY
-      : undefined;
+      : SupportedAVMNetworks.includes(network)
+        ? process.env.ALGORAND_PRIVATE_KEY || process.env.PRIVATE_KEY
+        : undefined;
 
   if (!privateKey) {
     return Response.json(
@@ -105,7 +108,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    const response = await settle(wallet, paymentPayload, paymentRequirements);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await settle(wallet as any, paymentPayload, paymentRequirements);
     return Response.json(response);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

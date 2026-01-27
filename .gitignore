@@ -13,3 +13,4 @@ examples/go
 **memo*/*
 **memo*/
 **launch.json
+**node_modules/*

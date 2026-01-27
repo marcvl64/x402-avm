@@ -3,6 +3,7 @@ import {
   PaymentPayloadSchema,
   PaymentRequirements,
   PaymentRequirementsSchema,
+  SupportedAVMNetworks,
   SupportedEVMNetworks,
   SupportedSVMNetworks,
   VerifyResponse,
@@ -47,7 +48,12 @@ export async function POST(req: Request) {
     ? createConnectedClient(body.paymentRequirements.network)
     : SupportedSVMNetworks.includes(network)
       ? await createSigner(network, process.env.SOLANA_PRIVATE_KEY)
-      : undefined;
+      : SupportedAVMNetworks.includes(network)
+        ? await createSigner(
+            network,
+            process.env.ALGORAND_PRIVATE_KEY || process.env.PRIVATE_KEY || "",
+          )
+        : undefined;
 
   if (!client) {
     return Response.json(
@@ -106,7 +112,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    const valid = await verify(client, paymentPayload, paymentRequirements);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const valid = await verify(client as any, paymentPayload, paymentRequirements);
     return Response.json(valid);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
