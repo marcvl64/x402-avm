@@ -333,6 +333,7 @@ export type {
   Price,
 } from "x402/types";
 export type { Address as SolanaAddress } from "@solana/kit";
+export type { Address as AlgorandAddress } from "algosdk";
 
 // Export session token API handlers for Onramp
 export { POST };

@@ -45,7 +45,8 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
       algodClient,
     );
 
-  const activeAccount = accounts.find(account => account.address === activeAddress);
+  const safeAccounts = accounts || [];
+  const activeAccount = safeAccounts.find(account => account.address === activeAddress);
   const isConnected = !!activeAddress && !!activeAccount;
   const isLoading = connecting;
 

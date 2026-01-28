@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   }
 
   const client = SupportedEVMNetworks.includes(network)
-    ? createConnectedClient(body.paymentRequirements.network)
+    ? createConnectedClient(network)
     : SupportedSVMNetworks.includes(network)
       ? await createSigner(network, process.env.SOLANA_PRIVATE_KEY)
       : SupportedAVMNetworks.includes(network)

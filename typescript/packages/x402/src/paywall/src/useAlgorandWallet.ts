@@ -77,17 +77,32 @@ export function useAlgorandWallet(
 
   useEffect(() => {
     const handleUpdate = () => {
-      const walletAccounts = manager.activeWallet?.accounts ?? [];
-      setAccounts(walletAccounts);
-      setActiveAddress(manager.activeAddress ?? undefined);
+      try {
+        const walletAccounts = manager.activeWallet?.accounts ?? [];
+        setAccounts(Array.isArray(walletAccounts) ? walletAccounts : []);
+        setActiveAddress(manager.activeAddress ?? undefined);
+      } catch (error) {
+        console.error("Error updating wallet state:", error);
+        setAccounts([]);
+        setActiveAddress(undefined);
+      }
     };
 
     handleUpdate();
 
-    const unsubscribe = manager.subscribe(() => handleUpdate());
+    const unsubscribe = manager.subscribe(() => {
+      try {
+        handleUpdate();
+      } catch (error) {
+        console.error("Error in wallet subscription:", error);
+        setAccounts([]);
+        setActiveAddress(undefined);
+      }
+    });
 
     manager.resumeSessions().catch(err => {
       console.error("Failed to resume Algorand wallet session", err);
+      setError("Failed to resume wallet session");
     });
 
     return () => {

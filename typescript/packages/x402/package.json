@@ -63,6 +63,10 @@
     "@wallet-standard/app": "^1.1.0",
     "@wallet-standard/base": "^1.1.0",
     "@wallet-standard/features": "^1.1.0",
+    "@walletconnect/modal": "^2.7.0",
+    "@blockshake/defly-connect": "^1.2.1",
+    "@agoralabs-sh/avm-web-provider": "^1.7.0",
+    "lute-connect": "^1.6.3",
     "viem": "^2.21.26",
     "wagmi": "^2.15.6",
     "zod": "^3.24.2"

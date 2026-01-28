@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
       use: ["@svgr/webpack"],
     });
 
+    // Exclude the reference directory from compilation
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ["**/app-pr-361-v1/**"],
+    };
+
     return config;
   },
 };

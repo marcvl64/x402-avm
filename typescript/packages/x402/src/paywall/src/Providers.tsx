@@ -1,9 +1,8 @@
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { WalletProvider } from "@txnlab/use-wallet";
 import type { ReactNode } from "react";
 import { base, baseSepolia } from "viem/chains";
 
-import { choosePaymentRequirement, isEvmNetwork, isAvmNetwork } from "./paywallUtils";
+import { choosePaymentRequirement, isEvmNetwork } from "./paywallUtils";
 import "./window.d.ts";
 
 type ProvidersProps = {
@@ -20,11 +19,6 @@ type ProvidersProps = {
 export function Providers({ children }: ProvidersProps) {
   const { testnet = true, cdpClientKey, appName, appLogo, paymentRequirements } = window.x402;
   const selectedRequirement = choosePaymentRequirement(paymentRequirements, testnet);
-
-  // Handle Algorand networks
-  if (isAvmNetwork(selectedRequirement.network)) {
-    return <WalletProvider value={{}}>{children}</WalletProvider>;
-  }
 
   // Handle EVM networks
   if (isEvmNetwork(selectedRequirement.network)) {
