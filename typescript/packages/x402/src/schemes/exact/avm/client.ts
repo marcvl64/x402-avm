@@ -5,6 +5,209 @@ import { WalletAccount, AlgorandClient } from "./types";
 import algosdk from "algosdk";
 
 /**
+ * Interface representing a payment payload
+ */
+interface AtomicTransactionGroup {
+  paymentIndex: number;
+  paymentGroup: string[];
+}
+
+/**
+ * Gets the current round from the Algorand client
+ *
+ * @param client - The Algorand client
+ * @returns The current round number
+ */
+async function getCurrentRound(client: AlgorandClient): Promise<number> {
+  const status = await client.client.status().do();
+  // Algod may return either camelCase or hyphenated keys depending on the transport.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const statusAny = status as any;
+  const lastRound = statusAny.lastRound ?? statusAny["last-round"];
+  if (typeof lastRound === "undefined") {
+    throw new Error("Unable to determine current round from algod status response");
+  }
+
+  const round = typeof lastRound === "bigint" ? Number(lastRound) : Number(lastRound);
+  if (Number.isNaN(round)) {
+    throw new Error("Algod status did not contain a numeric round value");
+  }
+
+  return round;
+}
+
+/**
+ * X402 transaction group builder for Algorand
+ * Simplifies creation of complex transaction groups for x402 payments
+ */
+export class X402TransactionGroupBuilder {
+  private composer: algosdk.AtomicTransactionComposer;
+  private transactions: algosdk.Transaction[] = [];
+  private txnIndices: number[] = [];
+
+  /**
+   * Creates a new instance of X402TransactionGroupBuilder
+   */
+  constructor() {
+    this.composer = new algosdk.AtomicTransactionComposer();
+  }
+
+  /**
+   * Adds a x402 payment transaction to the group
+   *
+   * @param from - Sender address
+   * @param to - Recipient address
+   * @param amount - Amount to send
+   * @param params - Transaction parameters
+   * @param asset - Optional asset ID for ASA transfers
+   * @returns Index of the added transaction in the group
+   */
+  addX402Payment(
+    from: string,
+    to: string,
+    amount: number,
+    params: algosdk.SuggestedParams,
+    asset?: number,
+  ): number {
+    const modifiedParams = { ...params };
+    modifiedParams.flatFee = true;
+
+    let txn: algosdk.Transaction;
+    if (asset) {
+      txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
+        sender: from,
+        receiver: to,
+        amount: amount,
+        assetIndex: asset,
+        closeRemainderTo: undefined,
+        note: undefined,
+        suggestedParams: modifiedParams,
+      });
+    } else {
+      txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+        sender: from,
+        receiver: to,
+        amount: amount,
+        suggestedParams: modifiedParams,
+      });
+    }
+
+    this.composer.addTransaction({ txn, signer: algosdk.makeEmptyTransactionSigner() });
+    const currentIndex = this.transactions.length;
+    this.transactions.push(txn);
+    this.txnIndices.push(currentIndex);
+
+    return currentIndex;
+  }
+
+  /**
+   * Adds a fee payer transaction to cover transaction fees
+   *
+   * @param feePayer - Address of the fee payer
+   * @param fee - Fee amount to cover
+   * @param params - Transaction parameters
+   * @returns Index of the fee transaction in the group
+   */
+  addX402FeePayment(feePayer: string, fee: number, params: algosdk.SuggestedParams): number {
+    const modifiedParams = { ...params };
+    modifiedParams.flatFee = true;
+    modifiedParams.fee = BigInt(fee);
+
+    const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      sender: feePayer,
+      receiver: feePayer,
+      amount: 0,
+      suggestedParams: modifiedParams,
+    });
+
+    this.composer.addTransaction({ txn, signer: algosdk.makeEmptyTransactionSigner() });
+    const currentIndex = this.transactions.length;
+    this.transactions.push(txn);
+    this.txnIndices.push(currentIndex);
+
+    return currentIndex;
+  }
+
+  /**
+   * Builds the transaction group and returns it as a base64-encoded array
+   * with the specified paymentIndex
+   *
+   * @param paymentIndex - Index of the payment transaction in the group
+   * @returns AtomicTransactionGroup with base64-encoded transactions
+   */
+  buildGroup(paymentIndex: number): AtomicTransactionGroup {
+    if (paymentIndex >= this.transactions.length) {
+      throw new Error("Payment index out of bounds");
+    }
+
+    // Assign group ID to all transactions
+    algosdk.assignGroupID(this.transactions);
+
+    const encodedGroup = this.transactions.map(txn =>
+      Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString("base64"),
+    );
+
+    return {
+      paymentIndex,
+      paymentGroup: encodedGroup,
+    };
+  }
+}
+
+/**
+ * Creates an atomic transaction group for a payment
+ *
+ * @param client - The Algorand client
+ * @param from - The sender's address
+ * @param to - The recipient's address
+ * @param amount - The payment amount in microAlgos
+ * @param firstRound - The first valid round
+ * @param lastRound - The last valid round
+ * @param asset - Optional asset ID for ASA transfers
+ * @param feePayer - Optional fee payer address for pooled-fee execution
+ * @returns An object containing the user transaction and, when applicable, the fee payer transaction
+ */
+async function createAtomicTransactionGroup(
+  client: AlgorandClient,
+  from: string,
+  to: string,
+  amount: number,
+  firstRound: number,
+  lastRound: number,
+  asset?: number,
+  feePayer?: string,
+): Promise<AtomicTransactionGroup> {
+  const standardFee = 1000;
+
+  const params = await client.client.getTransactionParams().do();
+
+  params.firstValid = BigInt(firstRound);
+  params.lastValid = BigInt(lastRound);
+  params.flatFee = true;
+
+  const composer = new X402TransactionGroupBuilder();
+  let paymentIndex: number;
+
+  if (feePayer) {
+    // Add fee payer transaction
+    composer.addX402FeePayment(feePayer, standardFee * 2, {
+      ...params,
+      fee: BigInt(standardFee * 2),
+    });
+
+    // Add payment transaction with zero fee (covered by fee payer)
+    params.fee = BigInt(0);
+    paymentIndex = composer.addX402Payment(from, to, amount, params, asset);
+  } else {
+    // Add payment transaction with standard fee
+    params.fee = BigInt(standardFee);
+    paymentIndex = composer.addX402Payment(from, to, amount, params, asset);
+  }
+
+  return composer.buildGroup(paymentIndex);
+}
+
+/**
  * Prepares an unsigned payment header with the given sender address and payment requirements.
  *
  * @param client - The Algorand client used for blockchain interactions
@@ -19,36 +222,26 @@ export async function preparePaymentHeader(
   x402Version: number,
   paymentRequirements: PaymentRequirements,
 ): Promise<ExactAvmPayload> {
-  const params = await client.client.getTransactionParams().do();
+  const currentRound = await getCurrentRound(client);
+  const validityWindow = 1000;
+  const firstRound = currentRound;
+  const lastRound = currentRound + validityWindow;
+
   const amount = parseInt(paymentRequirements.maxAmountRequired, 10);
+  const feePayer =
+    (paymentRequirements.extra as { feePayer?: string } | undefined)?.feePayer || undefined;
+  const atomicGroup = await createAtomicTransactionGroup(
+    client,
+    from,
+    paymentRequirements.payTo,
+    amount,
+    firstRound,
+    lastRound,
+    paymentRequirements.asset ? parseInt(paymentRequirements.asset as string, 10) : undefined,
+    feePayer,
+  );
 
-  // Create a simple payment transaction
-  let txn: algosdk.Transaction;
-  if (paymentRequirements.asset && paymentRequirements.asset !== "0") {
-    // ASA transfer
-    txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-      from: from,
-      to: paymentRequirements.payTo,
-      amount: amount,
-      assetIndex: parseInt(paymentRequirements.asset as string, 10),
-      suggestedParams: params,
-    });
-  } else {
-    // ALGO transfer
-    txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-      from: from,
-      to: paymentRequirements.payTo,
-      amount: amount,
-      suggestedParams: params,
-    });
-  }
-
-  const encodedTxn = Buffer.from(algosdk.encodeUnsignedTransaction(txn)).toString("base64");
-
-  return {
-    paymentIndex: 0,
-    paymentGroup: [encodedTxn],
-  };
+  return atomicGroup;
 }
 
 /**
@@ -69,7 +262,7 @@ export async function signPaymentHeader(
     throw new Error("Transaction group is missing from unsigned payment header");
   }
 
-  const txnGroupBytes: Uint8Array[] = paymentGroup.map((pg) => Buffer.from(pg, "base64"));
+  const txnGroupBytes: Uint8Array[] = paymentGroup.map(pg => Buffer.from(pg, "base64"));
   const indexesToSign = [paymentIndex]; // Sign only the user transaction
 
   const signedTxnGroup = await wallet.signTransactions(txnGroupBytes, indexesToSign);

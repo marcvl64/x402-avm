@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import algosdk from "algosdk";
 
 import type { PaymentRequirements } from "../../types/verify";
 import { exact } from "../../schemes";
@@ -25,18 +26,28 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
   const [status, setStatus] = useState<string>("");
   const [isPaying, setIsPaying] = useState(false);
   const [hideBalance, setHideBalance] = useState(true);
+  const [accountBalance, setAccountBalance] = useState<number | null>(null);
 
-  const {
-    isConnected,
-    activeAccount,
-    providers,
-    connect,
-    disconnect,
-    signTransactions,
-    accountBalance,
-    isLoading,
-    error,
-  } = useAlgorandWallet(paymentRequirement.network as "algorand-mainnet" | "algorand-testnet");
+  // Create Algorand client
+  const algodClient = useMemo(() => {
+    const network = paymentRequirement.network as "algorand-mainnet" | "algorand-testnet";
+    const baseServer =
+      network === "algorand-mainnet"
+        ? "https://mainnet-api.algonode.cloud"
+        : "https://testnet-api.algonode.cloud";
+
+    return new algosdk.Algodv2("", baseServer, "");
+  }, [paymentRequirement.network]);
+
+  const { activeAddress, accounts, connecting, error, connect, disconnect, signTransactions } =
+    useAlgorandWallet(
+      paymentRequirement.network as "algorand-mainnet" | "algorand-testnet",
+      algodClient,
+    );
+
+  const activeAccount = accounts.find(account => account.address === activeAddress);
+  const isConnected = !!activeAddress && !!activeAccount;
+  const isLoading = connecting;
 
   const x402 = window.x402;
   const amount =
@@ -49,36 +60,42 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
 
   const formattedBalance = accountBalance ? (accountBalance / 1_000_000).toFixed(2) : null;
 
-  const [selectedWalletValue, setSelectedWalletValue] = useState<string>("");
-
-  useEffect(() => {
-    if (!selectedWalletValue && providers.length === 1) {
-      setSelectedWalletValue(providers[0].id);
-    }
-  }, [providers, selectedWalletValue]);
-
   useEffect(() => {
     if (error) {
       setStatus(error);
     }
   }, [error]);
 
-  const handleConnect = useCallback(async () => {
-    const provider = providers.find(p => p.id === selectedWalletValue);
-    if (!provider) {
-      setStatus("Select an Algorand wallet to continue.");
-      return;
-    }
+  // Fetch account balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!activeAccount?.address) {
+        setAccountBalance(null);
+        return;
+      }
 
+      try {
+        const accountInfo = await algodClient.accountInformation(activeAccount.address).do();
+        setAccountBalance(Number(accountInfo.amount));
+      } catch (err) {
+        console.error("Failed to fetch account balance:", err);
+        setAccountBalance(null);
+      }
+    };
+
+    fetchBalance();
+  }, [activeAccount?.address, algodClient]);
+
+  const handleConnect = useCallback(async () => {
     try {
       setStatus("Connecting to wallet...");
-      await connect(selectedWalletValue);
+      await connect();
       setStatus("");
     } catch (error) {
       console.error("Failed to connect wallet", error);
       setStatus(error instanceof Error ? error.message : "Failed to connect wallet.");
     }
-  }, [providers, selectedWalletValue, connect]);
+  }, [connect]);
 
   const handleDisconnect = useCallback(async () => {
     try {
@@ -110,16 +127,21 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
       setStatus("Creating payment transaction...");
       const validPaymentRequirements = ensureValidAmount(paymentRequirement);
 
-      // Create a mock wallet client for the payment header creation
+      // Create wallet client for payment header creation
       const walletClient = {
         address: activeAccount.address,
-        client: {} as any, // This would need to be a proper Algodv2 client
+        client: algodClient,
         signTransactions,
+      };
+
+      const algorandClient = {
+        client: algodClient,
+        network: paymentRequirement.network,
       };
 
       const createHeader = async (version: number) =>
         exact.avm.createPaymentHeader(
-          { client: {} as any, network: paymentRequirement.network },
+          algorandClient,
           walletClient,
           version,
           validPaymentRequirements,
@@ -144,7 +166,7 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
         const errorData = await response.json().catch(() => ({}));
         if (errorData && typeof errorData.x402Version === "number") {
           const retryPayment = await exact.avm.createPaymentHeader(
-            { client: {} as any, network: paymentRequirement.network },
+            algorandClient,
             walletClient,
             errorData.x402Version,
             validPaymentRequirements,
@@ -262,29 +284,9 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
               Disconnect
             </button>
           ) : (
-            <>
-              <select
-                className="input"
-                value={selectedWalletValue}
-                onChange={event => setSelectedWalletValue(event.target.value)}
-              >
-                <option value="" disabled>
-                  Select a wallet
-                </option>
-                {providers.map(provider => (
-                  <option value={provider.id} key={provider.id}>
-                    {provider.metadata.name}
-                  </option>
-                ))}
-              </select>
-              <button
-                className="button button-primary"
-                onClick={handleConnect}
-                disabled={!selectedWalletValue}
-              >
-                Connect wallet
-              </button>
-            </>
+            <button className="button button-primary" onClick={handleConnect} disabled={isLoading}>
+              {isLoading ? <Spinner /> : "Connect Pera Wallet"}
+            </button>
           )}
           {isConnected && activeAccount && (
             <button className="button button-primary" onClick={handlePayment} disabled={isPaying}>
@@ -292,12 +294,6 @@ export function AvmPaywall({ paymentRequirement, onSuccessfulResponse }: AvmPayw
             </button>
           )}
         </div>
-
-        {!providers.length && (
-          <div className="status">
-            Install an Algorand wallet such as Pera to continue, then refresh this page.
-          </div>
-        )}
 
         {status && <div className="status">{status}</div>}
       </div>

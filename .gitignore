@@ -14,3 +14,5 @@ examples/go
 **memo*/
 **launch.json
 **node_modules/*
+**/src-pr-361-v1
+**/src-pr-361-v1/*

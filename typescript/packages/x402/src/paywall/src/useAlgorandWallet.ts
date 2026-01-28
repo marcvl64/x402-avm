@@ -1,118 +1,172 @@
-import { useWallet } from "@txnlab/use-wallet";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import algosdk from "algosdk";
+import {
+  NetworkConfigBuilder,
+  NetworkId,
+  WalletId,
+  WalletManager,
+  type WalletAccount,
+} from "@txnlab/use-wallet";
+
+const ALGOD_TOKEN = "";
+
+export type AlgorandNetwork = "algorand-mainnet" | "algorand-testnet";
+
+export interface UseAlgorandWalletResult {
+  activeAddress?: string;
+  accounts: WalletAccount[];
+  connecting: boolean;
+  error?: string;
+  connect: () => Promise<void>;
+  disconnect: () => Promise<void>;
+  signTransactions: (
+    transactions: Uint8Array[],
+    indexesToSign?: number[],
+  ) => Promise<(Uint8Array | null)[]>;
+  setActiveAccount: (account?: WalletAccount) => void;
+}
 
 /**
- * Custom hook for Algorand wallet integration
- * Provides wallet connection, transaction signing, and account management
+ * React hook for managing Algorand wallet connections, accounts, and transaction signing.
  *
- * @param network - The Algorand network to connect to
- * @returns Object with wallet state and functions
+ * @param network - The Algorand network to connect to ("algorand-mainnet" for mainnet or "algorand-testnet" for testnet).
+ * @param algodClient - An instance of algosdk.Algodv2 used for interacting with the Algorand blockchain.
+ * @returns An object containing wallet state, connection methods, and transaction signing utilities.
  */
 export function useAlgorandWallet(
-  network: "algorand-mainnet" | "algorand-testnet" = "algorand-testnet",
-) {
-  const { providers, activeAccount, isReady, isActive, signTransactions } = useWallet();
+  network: AlgorandNetwork,
+  algodClient: algosdk.Algodv2,
+): UseAlgorandWalletResult {
+  const manager = useMemo(() => {
+    const builder = new NetworkConfigBuilder();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [accountBalance, setAccountBalance] = useState<number | null>(null);
+    builder.mainnet({
+      algod: {
+        token: ALGOD_TOKEN,
+        baseServer: "https://mainnet-api.algonode.cloud",
+      },
+    });
 
-  // Create Algorand client based on network
-  const algodClient = new algosdk.Algodv2(
-    "",
-    network === "algorand-mainnet"
-      ? "https://mainnet-api.algonode.cloud"
-      : "https://testnet-api.algonode.cloud",
-    "",
-  );
+    builder.testnet({
+      algod: {
+        token: ALGOD_TOKEN,
+        baseServer: "https://testnet-api.algonode.cloud",
+      },
+    });
 
-  /**
-   * Connect to an Algorand wallet provider
-   */
-  const connect = useCallback(
-    async (providerId: string) => {
-      setIsLoading(true);
-      setError(null);
+    const networks = builder.build();
+    const defaultNetwork = network === "algorand-mainnet" ? NetworkId.MAINNET : NetworkId.TESTNET;
 
+    const instance = new WalletManager({
+      wallets: [WalletId.PERA],
+      networks,
+      defaultNetwork,
+      options: {
+        resetNetwork: false,
+      },
+    });
+
+    instance.algodClient = algodClient;
+    return instance;
+  }, [network, algodClient]);
+
+  const [activeAddress, setActiveAddress] = useState<string | undefined>(undefined);
+  const [accounts, setAccounts] = useState<WalletAccount[]>([]);
+  const [connecting, setConnecting] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const walletAccounts = manager.activeWallet?.accounts ?? [];
+      setAccounts(walletAccounts);
+      setActiveAddress(manager.activeAddress ?? undefined);
+    };
+
+    handleUpdate();
+
+    const unsubscribe = manager.subscribe(() => handleUpdate());
+
+    manager.resumeSessions().catch(err => {
+      console.error("Failed to resume Algorand wallet session", err);
+    });
+
+    return () => {
+      unsubscribe();
+      manager.disconnect().catch(err => {
+        console.error("Failed to disconnect Algorand wallet", err);
+      });
+    };
+  }, [manager]);
+
+  const connect = useCallback(async () => {
+    setConnecting(true);
+    setError(undefined);
+
+    try {
+      const wallet = manager.getWallet(WalletId.PERA);
+      if (!wallet) {
+        throw new Error("Pera wallet is not available");
+      }
+
+      const connectedAccounts = await wallet.connect();
+      if (connectedAccounts.length > 0) {
+        wallet.setActiveAccount(connectedAccounts[0].address);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to connect wallet";
+      setError(message);
+      throw err;
+    } finally {
+      setConnecting(false);
+    }
+  }, [manager]);
+
+  const disconnect = useCallback(async () => {
+    setError(undefined);
+    try {
+      await manager.disconnect();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to disconnect wallet";
+      setError(message);
+      throw err;
+    }
+  }, [manager]);
+
+  const signTransactions = useCallback(
+    async (transactions: Uint8Array[], indexesToSign?: number[]) => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const provider = providers?.find((p: any) => p.metadata?.id === providerId);
-        if (!provider) {
-          throw new Error(`Provider ${providerId} not found`);
-        }
-
-        await provider.connect();
+        const result = await manager.signTransactions(transactions, indexesToSign);
+        return result;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Connection failed");
-      } finally {
-        setIsLoading(false);
+        const message = err instanceof Error ? err.message : "Failed to sign transactions";
+        setError(message);
+        throw err;
       }
     },
-    [providers],
+    [manager],
   );
 
-  /**
-   * Disconnect from all wallet providers
-   */
-  const disconnect = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const activeProvider = providers?.find((p) => p.isActive);
-      if (activeProvider) {
-        await activeProvider.disconnect();
+  const setActiveAccount = useCallback(
+    (account?: WalletAccount) => {
+      const wallet = manager.getWallet(WalletId.PERA);
+      if (!wallet) {
+        return;
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Disconnect failed");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [providers]);
-
-  /**
-   * Fetch account information
-   */
-  const fetchAccountInfo = useCallback(async () => {
-    if (!activeAccount?.address) return;
-
-    try {
-      const accountInfo = await algodClient.accountInformation(activeAccount.address).do();
-      setAccountBalance(Number(accountInfo.amount));
-    } catch (err) {
-      console.error("Failed to fetch account info:", err);
-      setAccountBalance(null);
-    }
-  }, [activeAccount?.address, algodClient]);
-
-  /**
-   * Initialize and fetch account information when connected
-   */
-  useEffect(() => {
-    if (isActive && activeAccount) {
-      fetchAccountInfo();
-    } else {
-      setAccountBalance(null);
-    }
-  }, [isActive, activeAccount, fetchAccountInfo]);
+      if (account?.address) {
+        wallet.setActiveAccount(account.address);
+      }
+    },
+    [manager],
+  );
 
   return {
-    // Connection state
-    isConnected: isActive && !!activeAccount,
-    activeAccount,
-    providers,
-
-    // Actions
+    activeAddress,
+    accounts,
+    connecting,
+    error,
     connect,
     disconnect,
     signTransactions,
-
-    // Account information
-    accountBalance,
-
-    // Loading and error states
-    isLoading: isLoading || !isReady,
-    error,
+    setActiveAccount,
   };
 }
