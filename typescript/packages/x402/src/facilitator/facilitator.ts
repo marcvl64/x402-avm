@@ -34,7 +34,7 @@ export async function verify<
   chain extends Chain,
   account extends Account | undefined,
 >(
-  client: ConnectedClient | Signer,
+  client: ConnectedClient | Signer | AlgorandClient,
   payload: PaymentPayload,
   paymentRequirements: PaymentRequirements,
   config?: X402Config,
@@ -62,11 +62,7 @@ export async function verify<
 
     // avm (Algorand)
     if (SupportedAVMNetworks.includes(paymentRequirements.network)) {
-      return await verifyExactAvm(
-        client as AlgorandClient,
-        payload,
-        paymentRequirements,
-      );
+      return await verifyExactAvm(client as AlgorandClient, payload, paymentRequirements);
     }
   }
 
@@ -91,7 +87,7 @@ export async function verify<
  * @returns A SettleResponse indicating if the payment is settled and any settlement reason
  */
 export async function settle<transport extends Transport, chain extends Chain>(
-  client: Signer,
+  client: Signer | AvmWalletAccount,
   payload: PaymentPayload,
   paymentRequirements: PaymentRequirements,
   config?: X402Config,

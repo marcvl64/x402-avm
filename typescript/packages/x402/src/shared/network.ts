@@ -19,9 +19,6 @@ export function getNetworkId(network: Network): number {
   if (SvmNetworkToChainId.has(network)) {
     return SvmNetworkToChainId.get(network)!;
   }
-  if (SvmNetworkToChainId.has(network)) {
-    return SvmNetworkToChainId.get(network)!;
-  }
   if (AvmNetworkToChainId.has(network)) {
     return AvmNetworkToChainId.get(network)!;
   }

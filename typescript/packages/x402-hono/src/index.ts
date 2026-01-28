@@ -299,7 +299,13 @@ export function paymentMiddleware(
     // Verify payment
     let decodedPayment: PaymentPayload;
     try {
-      decodedPayment = exact.evm.decodePayment(payment);
+      // Use network-specific decoding
+      const paymentNetwork = paymentRequirements[0]?.network;
+      if (SupportedAVMNetworks.includes(paymentNetwork)) {
+        decodedPayment = exact.avm.decodePayment(payment);
+      } else {
+        decodedPayment = exact.evm.decodePayment(payment);
+      }
       decodedPayment.x402Version = x402Version;
     } catch (error) {
       return c.json(
