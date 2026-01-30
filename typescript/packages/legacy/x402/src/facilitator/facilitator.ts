@@ -2,13 +2,12 @@ import { verify as verifyExactEvm, settle as settleExactEvm } from "../schemes/e
 import { verify as verifyExactSvm, settle as settleExactSvm } from "../schemes/exact/svm";
 import { verify as verifyExactAvm, settle as settleExactAvm } from "../schemes/exact/avm";
 import { SupportedEVMNetworks, SupportedSVMNetworks, SupportedAVMNetworks } from "../types/shared";
-import { AlgorandClient, WalletAccount as AvmWalletAccount } from "../schemes/exact/avm/types";
 import { X402Config } from "../types/config";
 import {
   ConnectedClient as EvmConnectedClient,
   SignerWallet as EvmSignerWallet,
 } from "../types/shared/evm";
-import { ConnectedClient, Signer } from "../types/shared/wallet";
+import { ConnectedClient, Signer, AvmSigner } from "../types/shared/wallet";
 import {
   PaymentPayload,
   PaymentRequirements,
@@ -34,7 +33,7 @@ export async function verify<
   chain extends Chain,
   account extends Account | undefined,
 >(
-  client: ConnectedClient | Signer | AlgorandClient,
+  client: ConnectedClient | Signer,
   payload: PaymentPayload,
   paymentRequirements: PaymentRequirements,
   config?: X402Config,
@@ -62,7 +61,11 @@ export async function verify<
 
     // avm (Algorand)
     if (SupportedAVMNetworks.includes(paymentRequirements.network)) {
-      return await verifyExactAvm(client as AlgorandClient, payload, paymentRequirements);
+      return await verifyExactAvm(
+        client as AvmSigner,
+        payload,
+        paymentRequirements,
+      );
     }
   }
 
@@ -87,7 +90,7 @@ export async function verify<
  * @returns A SettleResponse indicating if the payment is settled and any settlement reason
  */
 export async function settle<transport extends Transport, chain extends Chain>(
-  client: Signer | AvmWalletAccount,
+  client: Signer,
   payload: PaymentPayload,
   paymentRequirements: PaymentRequirements,
   config?: X402Config,
@@ -116,7 +119,7 @@ export async function settle<transport extends Transport, chain extends Chain>(
     // avm (Algorand)
     if (SupportedAVMNetworks.includes(paymentRequirements.network)) {
       return await settleExactAvm(
-        client as AvmWalletAccount,
+        client as AvmSigner,
         payload,
         paymentRequirements,
       );
