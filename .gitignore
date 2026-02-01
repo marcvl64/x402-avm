@@ -7,10 +7,8 @@ proxy
 .env
 __pycache__/
 **/.DS_Store
-*memo*
-*memo*/*
-*memo/
 typescript/package-lock.json
-.vscode/*
-/.vscode
-.vscode/settings.json
+.vscode/
+.idea/
+.venv/
+.claude/
