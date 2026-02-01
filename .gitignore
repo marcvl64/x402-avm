@@ -10,12 +10,7 @@ __pycache__/
 e2e/facilitators/external-proxies
 *.d.ts
 examples/go
-**memo*/*
-**memo*/
-**launch.json
-**node_modules/*
-**/src-pr-361-v1
-**/src-pr-361-v1/*
-**/app-pr-361-v1
-**/app-pr-361-v1/*
-**/app-pr-361-v1-backup/*
+.vscode/
+.idea/
+.venv/
+.claude/
